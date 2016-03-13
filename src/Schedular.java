@@ -1,11 +1,18 @@
-import java.util.ArrayList;
+
 import java.util.LinkedList;
 
 
-public class Schedular {
+abstract public class Schedular {
 	protected LinkedList<Process> processes ;
-    protected ArrayList<Process>queue;
+   // protected ArrayList<Process>queue;
+    protected int avgWaitingTime;
+    
     
    // public void run()
+   public void AddProcess(Process p){
+	   processes.add(p);
+   }
+ //  abstract public void run () ;
+   abstract public int  calculateWaitingTime ();
     
 }
