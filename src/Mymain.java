@@ -8,8 +8,9 @@ public class Mymain {
 		
 	    Process p1 = new Process("P1",20,0);
 	    Process p2=new Process("P2",10,0);
-	    Process p3=new Process("P3",5,2);
-	    Process p4=new Process("P4",15,0);
+	    Process p3=new Process("P3",15,0);
+	    Process p4=new Process("P4",5,2);
+	    
 	    LinkedList<Process>processes1=new LinkedList<Process>();
 	    processes1.add(p1);
 	    processes1.add(p2);
