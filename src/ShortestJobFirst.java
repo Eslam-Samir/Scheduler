@@ -22,24 +22,16 @@ public class ShortestJobFirst extends  Schedular{
 			while(!processes.isEmpty())
 			{
 				int min = getShortestJobIndex(processes);
-				if(!output.isEmpty())
+				if(!output.isEmpty() && processes.get(min).getArrivalTime() < output.get(0).getArrivalTime())
 				{
-					if(processes.get(min).getArrivalTime() < output.get(0).getArrivalTime())
-					{
-						Process startProcess = new Process(processes.get(min).getName(), 
-								(output.get(0).getArrivalTime() - processes.get(min).getArrivalTime()), 
-								processes.get(min).getArrivalTime());
-						processes.get(min).setRunTime(processes.get(min).getRunTime() - startProcess.getRunTime());
+					Process startProcess = new Process(processes.get(min).getName(), 
+							(output.get(0).getArrivalTime() - processes.get(min).getArrivalTime()), 
+							processes.get(min).getArrivalTime());
+					processes.get(min).setRunTime(processes.get(min).getRunTime() - startProcess.getRunTime());
 						
-						output.addFirst(startProcess);
-						if(processes.get(min).getRunTime() == 0)
-							processes.remove(processes.get(min));
-					}
-					else
-					{
-						output.addLast(processes.get(min));
+					output.addFirst(startProcess);
+					if(processes.get(min).getRunTime() == 0)
 						processes.remove(processes.get(min));
-					}
 				}
 				else
 				{
