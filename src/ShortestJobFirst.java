@@ -26,7 +26,7 @@ public class ShortestJobFirst extends  Schedular{
 			        }
 			        return 0;
 			   }
-			}); 
+		}); 
 		Collections.sort(processes, new Comparator<Process>(){
 			   @Override
 			   public int compare(Process o1, Process o2){
@@ -38,7 +38,7 @@ public class ShortestJobFirst extends  Schedular{
 			        }
 			        return 0;
 			   }
-			}); 
+		}); 
 
 	}
 
