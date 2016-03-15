@@ -1,5 +1,5 @@
 
 public enum SchedulerType {
-	primitive,
-	non_primitive;
+	preemptive,
+	non_preemptive;
 }

@@ -8,10 +8,10 @@ public class Mymain {
 	public static void main(String[] args) {
 		
 	    Process p1 = new Process("P1",20,0);
-	    Process p2=new Process("P2",10,3);
+	    Process p2=new Process("P2",10,9);
 	    Process p3=new Process("P3",5,2);
-	    Process p4=new Process("P4",3,4);
-	    Process p5=new Process("P5",10,4);
+	    Process p4=new Process("P4",3,9);
+	    Process p5=new Process("P5",10,8);
 	    Process p6=new Process("P6",15,0);
 	    LinkedList<Process>processes1=new LinkedList<Process>();
 	    processes1.add(p1);
@@ -22,7 +22,7 @@ public class Mymain {
 	    processes1.add(p6);
 	    FirstComeFirstServed f1=new FirstComeFirstServed(processes1);
 	    System.out.println(f1.calculateWaitingTime());
-	    ShortestJobFirst f2 =new ShortestJobFirst(processes1, SchedulerType.primitive);
+	    ShortestJobFirst f2 =new ShortestJobFirst(processes1, SchedulerType.preemptive);
 	    System.out.println(f2.calculateWaitingTime());
 	}
 	

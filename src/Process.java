@@ -3,6 +3,7 @@ public class Process {
 	private String name;
 	private int runTime;
 	private int arrivalTime;
+	private int startedTime;
 	private int finishTime;
 	
 	
@@ -10,6 +11,7 @@ public class Process {
 		this.name= " ";
 		this.runTime=0;
 		this.arrivalTime=0;
+		this.startedTime=0;
 		this.finishTime=0;
 	}
 	
@@ -17,8 +19,17 @@ public class Process {
 		this.name= name;
 		this.runTime=runTime;
 		this.arrivalTime=arrivalTime;
-		
+		this.startedTime=0;
+		this.finishTime=0;
 	}
+	public int getStartedTime() {
+		return startedTime;
+	}
+
+	public void setStartedTime(int startedTime) {
+		this.startedTime = startedTime;
+	}
+
 	public int getFinishTime() {
 		return finishTime;
 	}

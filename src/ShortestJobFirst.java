@@ -9,34 +9,47 @@ public class ShortestJobFirst extends  Schedular{
 	private LinkedList<Process> output; 
 	ShortestJobFirst (LinkedList<Process>processes, SchedulerType type){
 		this.processes=processes;
+		
 		this.type = type;
 		output = new LinkedList<>();
+		
 		this.run();
 	}
 		
 	
 	private void run() {
 		switch (type) {
-		case primitive:
-			
+		case preemptive:
 			while(!processes.isEmpty())
 			{
 				int min = getShortestJobIndex(processes);
-				if(!output.isEmpty() && processes.get(min).getArrivalTime() < output.get(0).getArrivalTime())
+				Process currentProcess = processes.get(min);
+				int index = gapIndex();
+				
+				if(!output.isEmpty() && currentProcess.getArrivalTime() < output.get(index).getArrivalTime())
 				{
-					Process startProcess = new Process(processes.get(min).getName(), 
-							(output.get(0).getArrivalTime() - processes.get(min).getArrivalTime()), 
-							processes.get(min).getArrivalTime());
-					processes.get(min).setRunTime(processes.get(min).getRunTime() - startProcess.getRunTime());
-						
-					output.addFirst(startProcess);
-					if(processes.get(min).getRunTime() == 0)
-						processes.remove(processes.get(min));
+					int freeTime = getFreeTime(index);
+					
+					if(freeTime < currentProcess.getRunTime() && output.get(index).getArrivalTime() - currentProcess.getArrivalTime() < freeTime)
+					{
+						insertToGap(currentProcess, output.get(index).getArrivalTime() - currentProcess.getArrivalTime(), index);
+					}
+					else if(freeTime < currentProcess.getRunTime())
+					{
+						insertToGap(currentProcess, freeTime, index);
+					}
+					else
+					{
+						currentProcess.setStartedTime(currentProcess.getArrivalTime());
+						output.add(index,currentProcess);
+						processes.remove(currentProcess);						
+					}
 				}
 				else
 				{
-					output.addLast(processes.get(min));
-					processes.remove(processes.get(min));
+					currentProcess.setStartedTime(currentProcess.getArrivalTime());
+					output.addLast(currentProcess);
+					processes.remove(currentProcess);
 				}
 				
 			}
@@ -45,16 +58,10 @@ public class ShortestJobFirst extends  Schedular{
 			{
 				System.out.println(x.getName() + "   " + x.getRunTime() + "   " + x.getArrivalTime());
 			}
-			
-			
-			
-			
-			
-			
-			
+				
 			break;
 
-		case non_primitive:
+		case non_preemptive:
 			Collections.sort(processes, new Comparator<Process>(){
 				   @Override
 				   public int compare(Process o1, Process o2){
@@ -116,4 +123,35 @@ public class ShortestJobFirst extends  Schedular{
 		return min;
 	}
 
+	private void insertToGap(Process currentProcess, int runTime, int index)
+	{
+		Process startProcess = new Process(currentProcess.getName(), 
+				runTime, 
+				currentProcess.getArrivalTime());
+		startProcess.setStartedTime(output.get(index).getArrivalTime() - startProcess.getRunTime());
+		currentProcess.setRunTime(currentProcess.getRunTime() - runTime);
+		output.add(index,startProcess);
+		if(currentProcess.getRunTime() == 0)
+			processes.remove(currentProcess);
+	}
+	
+	private int getFreeTime(int index)
+	{
+		if(index == 0)
+			return output.get(index).getArrivalTime();
+		else
+			return output.get(index).getArrivalTime() - (output.get(index-1).getArrivalTime()+output.get(index-1).getRunTime());
+	}
+	
+	private int gapIndex()
+	{
+		for(int i = 1; i < output.size(); i++)
+		{
+			if(output.get(i).getStartedTime() - output.get(i-1).getStartedTime() > output.get(i-1).getRunTime())
+			{
+				return i;
+			}
+		}
+		return 0;
+	}
 }
