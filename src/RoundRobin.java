@@ -21,23 +21,25 @@ public class RoundRobin extends Schedular
 		return 0;
 	}
 	
-	private void run(){
+	private void run()
+	{
+		
 		int remainderTime;
 		for(int i = 0; i < processes.size(); i++){
 			
 			if (processes.get(i).getRunTime()>q){
 				remainderTime=processes.get(i).getRunTime()-q; 
 				Process p=new Process(processes.get(i).getName(),remainderTime
-									,processes.get(i).getArrivalTime());
+									,processes.get(i).getArrivalTime(),0);
 				processes.addLast(p);
 			}
 			System.out.println(processes.get(i).getName() + "    " + processes.get(i).getRunTime());
 		}
 
-	
-
-			
-		
 	}
 		
-}
+	  
+			
+		}
+		
+

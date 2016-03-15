@@ -4,19 +4,24 @@ public class Process {
 	private int runTime;
 	private int arrivalTime;
 	private int finishTime;
+	private int priority;
 	
 	
-	Process(){
+	Process()
+	{
 		this.name= " ";
 		this.runTime=0;
 		this.arrivalTime=0;
 		this.finishTime=0;
+		this.priority = 0;
 	}
 	
-	Process (String name , int runTime,int arrivalTime){
+	Process (String name , int runTime,int arrivalTime, int priority)
+	{
 		this.name= name;
 		this.runTime=runTime;
 		this.arrivalTime=arrivalTime;
+		this.priority = priority;
 		
 	}
 	public int getFinishTime() {
@@ -42,6 +47,14 @@ public class Process {
 	}
 	public void setRunTime(int runTime) {
 		this.runTime = runTime;
+	}
+
+	public int getPriority() {
+		return priority;
+	}
+
+	public void setPriority(int priority) {
+		this.priority = priority;
 	}
 	
 
