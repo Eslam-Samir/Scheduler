@@ -6,7 +6,7 @@ import java.util.LinkedList;
 
 public class ShortestJobFirst extends  Schedular{
 	
-	private LinkedList<Process> output=new LinkedList<Process>();
+	//private LinkedList<Process> output=new LinkedList<Process>();
 
 	ShortestJobFirst (LinkedList<Process>processes){
 			this.processes=processes;
@@ -30,43 +30,61 @@ public class ShortestJobFirst extends  Schedular{
 		return min;
 	}	
 	
-	private void run() {
+	private int getFirstJobIndex(LinkedList<Process> processes)
+	{
+		int min = 0;
+		for(Process process: processes)
+		{
+			if(process.getArrivalTime() < processes.get(min).getArrivalTime())
+			{
+				min = processes.indexOf(process);
+			}
+			
+		}
+		return min;
+	}	
+	
+	 private LinkedList<Process> run() {
 		// TODO Auto-generated method stub
 		LinkedList<Process> pWithSameAT=new LinkedList<Process>();
 		int time=0;
 		while(!processes.isEmpty())
-      {
-		int min = getShortestJobIndex(processes);
+           {
+		      int min = getShortestJobIndex(processes);
 
-        if(processes.get(min).getArrivalTime()<=time){
-		output.addLast(processes.get(min));
-        time+=processes.get(min).getRunTime();
-		processes.remove(processes.get(min));
-		}
-        else{
-        for(int i=0;i<processes.size();i++){
-        	if (processes.get(i).getArrivalTime()<=time){
-        		pWithSameAT.add(processes.get(i));}}
+              if(processes.get(min).getArrivalTime()<=time){
+		          output.addLast(processes.get(min));
+		          time+=processes.get(min).getRunTime();
+		          processes.remove(processes.get(min));
+              	}
+               else{
+            	   	for(int i=0;i<processes.size();i++){
+            	   			if (processes.get(i).getArrivalTime()<=time)
+            	   		{
+            	   	pWithSameAT.add(processes.get(i));
+            	   	    }
+        	   }
+            	   	if(pWithSameAT.isEmpty()){
+            	   		int first=getFirstJobIndex(processes);
+            	   		int idleTime= processes.get(first).getArrivalTime()-time;
+            	   		Process idle=new Process("idle",idleTime,time);
+            	   		output.addLast(idle);
+            	   		time+=idleTime;
+            	   	}
+            	   	else{
         		int min1=getShortestJobIndex(pWithSameAT);
         		output.addLast(processes.get(min1));
                 time+=processes.get(min1).getRunTime();
-        		processes.remove(processes.get(min1));
-        	
-        	
-        }
-        for(Process x: output)
-		{
-			System.out.println(x.getName() + "   " + x.getRunTime() + "   " + x.getArrivalTime());
-				}
-        System.out.println("========================");
-        }
-     
-				
-			for(Process x: output)
-			{
-				System.out.println(x.getName() + "   " + x.getRunTime() + "   " + x.getArrivalTime());
-					}
+        		processes.remove(processes.get(min1));	
+            	   	}
+          }			
 	}
+		for(Process x:output){
+			System.out.println(x.getName()+"    "+x.getRunTime());
+			
+		}
+		return output;
+ }
 
 	@Override
 	public int calculateWaitingTime() {
