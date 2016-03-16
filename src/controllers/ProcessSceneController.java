@@ -1,7 +1,11 @@
 package controllers;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+
+
+
 
 
 
@@ -13,7 +17,10 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -80,10 +87,15 @@ public class ProcessSceneController implements Initializable {
 		
 	}
 	
-	public void goBack(ActionEvent action)
+	public void goBack(ActionEvent action) throws IOException
 	{
 		Stage stage=(Stage) grid.getScene().getWindow();
-		
+		FXMLLoader loader = new FXMLLoader(getClass().getResource("/resources/Main.fxml"));
+        Parent root = loader.load();
+        Scene scene = new Scene(root);
+        scene.getStylesheets().add(getClass().getResource("/resources/application.css").toExternalForm());	
+		stage.setScene(scene);
+		stage.show();		
 	}
 	
 	public void keyPressed(KeyEvent event)
