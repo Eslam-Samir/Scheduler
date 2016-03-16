@@ -20,36 +20,47 @@ public class ShortestJobFirst extends  Schedular{
 	private void run() {
 		switch (type) {
 		case preemptive:
+			int timeLimit = 0;
 			while(!processes.isEmpty())
 			{
-				int min = getShortestJobIndex(processes);
-				Process currentProcess = processes.get(min);
-				int index = gapIndex();
+				int min = getShortestJobIndexLimited(processes, timeLimit);
+				int nextArrival = getNextArrivalTime(processes, timeLimit);
 				
-				if(!output.isEmpty() && currentProcess.getArrivalTime() < output.get(index).getArrivalTime())
+				if(min == -1)
 				{
-					int freeTime = getFreeTime(index);
-					
-					if(freeTime < currentProcess.getRunTime() && output.get(index).getArrivalTime() - currentProcess.getArrivalTime() < freeTime)
+					Process idleProcess = new Process("Idle", nextArrival - timeLimit, timeLimit);
+					output.addLast(idleProcess);
+					timeLimit = nextArrival;
+				}
+				else if(nextArrival == 0 || timeLimit + processes.get(min).getRunTime() <= nextArrival)
+				{
+					output.addLast(processes.get(min));
+					timeLimit += processes.get(min).getRunTime();
+					processes.remove(processes.get(min));
+				}
+				else if(timeLimit + processes.get(min).getRunTime() > nextArrival)
+				{
+					Process currentProcess = processes.get(min);
+					int nextMin = getShortestJobIndexLimited(processes, nextArrival);
+					if(nextMin == min)
 					{
-						insertToGap(currentProcess, output.get(index).getArrivalTime() - currentProcess.getArrivalTime(), index);
-					}
-					else if(freeTime < currentProcess.getRunTime())
-					{
-						insertToGap(currentProcess, freeTime, index);
+						output.addLast(currentProcess);
+						timeLimit += currentProcess.getRunTime();
+						processes.remove(currentProcess);
 					}
 					else
 					{
-						currentProcess.setStartedTime(currentProcess.getArrivalTime());
-						output.add(index,currentProcess);
-						processes.remove(currentProcess);						
+						Process pausedProcess = new Process(currentProcess.getName()
+								, nextArrival - timeLimit, currentProcess.getArrivalTime());
+						currentProcess.setRunTime(currentProcess.getRunTime()-pausedProcess.getRunTime());
+						
+						if(currentProcess.getRunTime() == 0)
+							processes.remove(currentProcess);
+						
+						output.addLast(pausedProcess);
+						timeLimit = nextArrival;
 					}
-				}
-				else
-				{
-					currentProcess.setStartedTime(currentProcess.getArrivalTime());
-					output.addLast(currentProcess);
-					processes.remove(currentProcess);
+					
 				}
 				
 			}
@@ -105,11 +116,18 @@ public class ShortestJobFirst extends  Schedular{
 				return totalWaitingTime;
 	}
 	
-	private int getShortestJobIndex(LinkedList<Process> processes)
+	// return -1 if there is no process to schedule
+	private int getShortestJobIndexLimited(LinkedList<Process> processes, int timeLimit)
 	{
 		int min = 0;
+		boolean isProcessAvailable = false;
 		for(Process process: processes)
 		{
+			if(process.getArrivalTime() > timeLimit)
+				continue;
+			else
+				isProcessAvailable = true;
+			
 			if(process.getRunTime() < processes.get(min).getRunTime())
 			{
 				min = processes.indexOf(process);
@@ -120,38 +138,28 @@ public class ShortestJobFirst extends  Schedular{
 					min = processes.indexOf(process);
 			}	
 		}
-		return min;
-	}
-
-	private void insertToGap(Process currentProcess, int runTime, int index)
-	{
-		Process startProcess = new Process(currentProcess.getName(), 
-				runTime, 
-				currentProcess.getArrivalTime());
-		startProcess.setStartedTime(output.get(index).getArrivalTime() - startProcess.getRunTime());
-		currentProcess.setRunTime(currentProcess.getRunTime() - runTime);
-		output.add(index,startProcess);
-		if(currentProcess.getRunTime() == 0)
-			processes.remove(currentProcess);
-	}
-	
-	private int getFreeTime(int index)
-	{
-		if(index == 0)
-			return output.get(index).getArrivalTime();
+		
+		if(isProcessAvailable)
+			return min;
 		else
-			return output.get(index).getArrivalTime() - (output.get(index-1).getArrivalTime()+output.get(index-1).getRunTime());
+			return -1;
 	}
 	
-	private int gapIndex()
+	// return zero if all processes have arrived
+	private int getNextArrivalTime(LinkedList<Process> processes, int timeLimit)
 	{
-		for(int i = 1; i < output.size(); i++)
+		int nextArrival = 0;	
+		
+		for(Process process: processes)
 		{
-			if(output.get(i).getStartedTime() - output.get(i-1).getStartedTime() > output.get(i-1).getRunTime())
+			if(process.getArrivalTime() <= timeLimit)
+				continue;				
+				
+			if(nextArrival > process.getArrivalTime() || nextArrival == 0)
 			{
-				return i;
-			}
+				nextArrival = process.getArrivalTime();
+			}	
 		}
-		return 0;
+		return nextArrival;
 	}
 }

@@ -7,12 +7,18 @@ public class Mymain {
 
 	public static void main(String[] args) {
 		
-	    Process p1 = new Process("P1",20,0);
-	    Process p2=new Process("P2",10,9);
+	    Process p1 = new Process("P1",20,9);
+	    Process p2=new Process("P2",7,13);
 	    Process p3=new Process("P3",5,2);
 	    Process p4=new Process("P4",3,9);
 	    Process p5=new Process("P5",10,8);
-	    Process p6=new Process("P6",15,0);
+	    Process p6=new Process("P6",15,9);
+		/*Process p1 = new Process("P1",20,2);
+	    Process p2=new Process("P2",10,2);
+	    Process p3=new Process("P3",5,2);
+	    Process p4=new Process("P4",3,40);
+	    Process p5=new Process("P5",10,40);
+	    Process p6=new Process("P6",15,40);*/
 	    LinkedList<Process>processes1=new LinkedList<Process>();
 	    processes1.add(p1);
 	    processes1.add(p2);
