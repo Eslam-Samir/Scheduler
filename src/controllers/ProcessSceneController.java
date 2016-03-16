@@ -3,38 +3,38 @@ package controllers;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+
+
+
+
 import scheduler.Process;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
 
 
-public class ProcessSceneController implements Initializable {
-	private int numberOfProcesses;
-	private String SchedulerType;
-	
+public class ProcessSceneController implements Initializable {	
 	@FXML
 	private GridPane grid;
-	
 	@FXML
 	private TextField processName;
-	
 	@FXML
 	private TextField arrivalTime;
-	
 	@FXML
 	private TextField burst;
-	
 	@FXML
 	private TextField priority;
-	
 	@FXML
 	private TableView<Process> table;
 	@FXML
@@ -46,6 +46,8 @@ public class ProcessSceneController implements Initializable {
 	@FXML
 	private TableColumn<Process, Integer> priorityColumn;
 	
+	private int numberOfProcesses;
+	private String SchedulerType;
 	private ObservableList<Process> list = FXCollections.observableArrayList();
 	
 	public void addProcess(ActionEvent action)
@@ -60,6 +62,10 @@ public class ProcessSceneController implements Initializable {
 		{
 			System.out.print("Please Enter All Fields\n");
 		}
+		else if(list.size() >= numberOfProcesses)
+		{
+			System.out.print("You Entered The Desired Processes\n");
+		}
 		else
 		{
 			Process process = new Process(processName.getText(), 
@@ -69,14 +75,32 @@ public class ProcessSceneController implements Initializable {
 		}
 	}
 	
+	public void startScheduling(ActionEvent action)
+	{
+		
+	}
+	
+	public void goBack(ActionEvent action)
+	{
+		Stage stage=(Stage) grid.getScene().getWindow();
+		
+	}
+	
+	public void keyPressed(KeyEvent event)
+	{
+		if (event.getCode().equals( KeyCode.DELETE ) )
+	    {
+			list.remove(table.getSelectionModel().getSelectedIndex());
+			table.setItems(list);
+	    }
+	}
+	
 	
 	public int getNumberOfProcesses() {
 		return numberOfProcesses;
 	}
 	public void setNumberOfProcesses(int numberOfProcesses) {
-		this.numberOfProcesses = numberOfProcesses;
-		
-		
+		this.numberOfProcesses = numberOfProcesses;		
 	}
 	public String getSchedulingType() {
 		return SchedulerType;

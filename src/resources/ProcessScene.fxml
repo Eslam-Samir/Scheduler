@@ -9,6 +9,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
@@ -100,8 +101,11 @@
          <font>
             <Font size="14.0" />
          </font>
+         <padding>
+            <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
+         </padding>
       </Button>
-      <TableView id="inputs" fx:id="table" editable="true" prefHeight="200.0" prefWidth="200.0">
+      <TableView id="inputs" fx:id="table" editable="true" onKeyPressed="#keyPressed" prefHeight="200.0" prefWidth="200.0">
         <columns>
           <TableColumn fx:id="nameColumn" prefWidth="75.0" text="Process Name" />
           <TableColumn fx:id="arrivalColumn" prefWidth="75.0" text="Arrival Time" />
@@ -115,13 +119,31 @@
             <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
          </VBox.margin>
       </TableView>
-      <Button alignment="CENTER" mnemonicParsing="false" text="Schedule">
-         <font>
-            <Font size="14.0" />
-         </font>
-         <VBox.margin>
-            <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
-         </VBox.margin>
-      </Button>
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+         <children>
+            <Button mnemonicParsing="false" onAction="#goBack" text="Back">
+               <HBox.margin>
+                  <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+               </HBox.margin>
+               <font>
+                  <Font size="14.0" />
+               </font>
+               <padding>
+                  <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
+               </padding>
+            </Button>
+            <Button alignment="CENTER" mnemonicParsing="false" onAction="#startScheduling" text="Schedule">
+               <font>
+                  <Font size="14.0" />
+               </font>
+               <HBox.margin>
+                  <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+               </HBox.margin>
+               <padding>
+                  <Insets bottom="5.0" left="15.0" right="15.0" top="5.0" />
+               </padding>
+            </Button>
+         </children>
+      </HBox>
    </children>
 </VBox>
