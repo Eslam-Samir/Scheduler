@@ -7,7 +7,7 @@ public class Process {
 	private SimpleStringProperty name;
 	private SimpleIntegerProperty runTime;
 	private SimpleIntegerProperty arrivalTime;
-	
+	private SimpleIntegerProperty priority;
 	
 	public int getArrivalTime() {
 		return arrivalTime.get();
@@ -33,5 +33,10 @@ public class Process {
 		this.runTime = new SimpleIntegerProperty(runTime);
 	}
 	
-
+	public int getPriority() {
+		return priority.get();
+	}
+	public void setPriority(int priority) {
+		this.priority = new SimpleIntegerProperty(priority);
+	}
 }

@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import custom.views.NumberTextField;
+import extras.Utility;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -41,11 +42,11 @@ public class MainController implements Initializable {
 		String schedulerType = type.getValue();
 		if(processesCount.isEmpty() || Integer.valueOf(processesCount) == 0)
 		{
-			System.out.print("Enter Number of Processes\n");
+			Utility.createAlert("Enter Number of Processes");
 		}
 		else if(schedulerType == null)
 		{
-			System.out.print("Choose Scheduler Type\n");
+			Utility.createAlert("Choose Scheduler Type");
 		}
 		else
 		{

@@ -2,11 +2,11 @@ package controllers;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.ResourceBundle;
 
 import custom.views.GanttChart.ExtraData;
 import custom.views.GanttChart;
+import extras.Utility;
 import scheduler.Process;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -67,19 +67,20 @@ public class ProcessSceneController implements Initializable {
 	
 	public void addProcess(ActionEvent action)
 	{
-		if(processName.getText().trim().isEmpty() || arrivalTime.getText().isEmpty()
+		if(list.size() >= numberOfProcesses) //TODO check if this is required
+		{
+			Utility.createAlert("You Can't Add More Processes",
+					"Go back and change number of processes if you want to add more.");
+		}
+		else if(processName.getText().trim().isEmpty() || arrivalTime.getText().isEmpty()
 				||burst.getText().isEmpty())
 		{
-			System.out.print("Please Enter All Fields\n");
+			Utility.createAlert("Please Enter All Fields");
 		}
 		else if((this.SchedulerType.equals("Priority Scheduling (Preemptive)") 
 				|| this.SchedulerType.equals("Priority Scheduling (Non-Preemptive)")) && priority.getText().isEmpty())
 		{
-			System.out.print("Please Enter All Fields\n");
-		}
-		else if(list.size() >= numberOfProcesses)
-		{
-			System.out.print("You Entered The Desired Processes\n");
+			Utility.createAlert("Please Enter All Fields");
 		}
 		else
 		{
@@ -87,7 +88,7 @@ public class ProcessSceneController implements Initializable {
 			{
 				if(x.getName().equals(processName.getText()))
 				{
-					System.out.print("Enter a New Process\n");
+					Utility.createAlert("Process with the same name already exits");
 					return;
 				}
 			}
@@ -110,7 +111,7 @@ public class ProcessSceneController implements Initializable {
 	{
 		if(list.size() < this.numberOfProcesses)
 		{
-			System.out.print("Enter the missing processes\n");
+			Utility.createAlert("You have not entered all processes");
 			return;
 		}
 		Stage stage = new Stage();
@@ -174,6 +175,8 @@ public class ProcessSceneController implements Initializable {
         
         stage.setScene(scene);
         stage.show();
+        
+        grid.setDisable(false);
 	}
 	
 	public void goBack(ActionEvent action) throws IOException
@@ -224,12 +227,13 @@ public class ProcessSceneController implements Initializable {
 		type.setText(type.getText() + schedulingType);
 		
 	}
+	
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		nameColumn.setCellValueFactory(new PropertyValueFactory<Process, String>("name"));
 		arrivalColumn.setCellValueFactory(new PropertyValueFactory<Process, Integer>("arrivalTime"));
 		burstColumn.setCellValueFactory(new PropertyValueFactory<Process, Integer>("runTime"));
-		priorityColumn.setCellValueFactory(new PropertyValueFactory<Process, Integer>(""));
+		priorityColumn.setCellValueFactory(new PropertyValueFactory<Process, Integer>("priority"));
 	}
 }
