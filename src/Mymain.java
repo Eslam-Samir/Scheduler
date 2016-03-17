@@ -6,8 +6,8 @@ public class Mymain {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		
-	    Process p1 = new Process("P1",20,0,3);
-	    Process p2=new Process("P2",10,0,2);
+	    Process p1 = new Process("P1",20,5,3);
+	    Process p2=new Process("P2",10,6,2);
 	    Process p3=new Process("P3",5,2,4);
 	    Process p4=new Process("P4",15,0,1);
 	    LinkedList<Process>processes1=new LinkedList<Process>();
