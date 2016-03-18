@@ -1,4 +1,4 @@
-package Scheduler;
+package scheduler;
 
 public class Process {
 	private String name;
