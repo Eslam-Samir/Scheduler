@@ -1,12 +1,10 @@
-
 import java.util.LinkedList;
-
 
 abstract public class Schedular {
 	protected LinkedList<Process> processes ;
 	protected LinkedList<Process> output = new LinkedList<Process>();
 
-    protected double avgWaitingTime;
+    protected double avgWaitingTime = 0;
     protected int numberOfProcesses;
     
     public void AddProcess(Process p)
