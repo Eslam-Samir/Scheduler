@@ -1,3 +1,4 @@
+package Scheduler;
 
 public class Process {
 	private String name;
@@ -45,7 +46,7 @@ public class Process {
 	public void setArrivalTime(double arrivalTime) {
 		this.arrivalTime = arrivalTime;
 	}
-	
+
 	public String getName() {
 		return name;
 	}

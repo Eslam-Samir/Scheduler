@@ -1,3 +1,4 @@
+package Scheduler;
 import java.util.LinkedList;
 
 public class FirstComeFirstServed extends  Schedular {
@@ -67,5 +68,4 @@ public class FirstComeFirstServed extends  Schedular {
 			avgWaitingTime = totalWaitingTime/numberOfProcesses;
 		return avgWaitingTime;
 	}
-	
 }
