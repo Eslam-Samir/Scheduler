@@ -16,15 +16,15 @@ public class RoundRobin extends Schedular
 	}
 		
 	@Override
-	public int calculateWaitingTime() {
+	public double calculateWaitingTime() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 	
-	private void run()
+	public LinkedList<Process> run()
 	{
 		
-		int remainderTime;
+		double remainderTime;
 		for(int i = 0; i < processes.size(); i++){
 			
 			if (processes.get(i).getRunTime()>q){
@@ -35,6 +35,7 @@ public class RoundRobin extends Schedular
 			}
 			System.out.println(processes.get(i).getName() + "    " + processes.get(i).getRunTime());
 		}
+		return output;
 
 	}
 		
