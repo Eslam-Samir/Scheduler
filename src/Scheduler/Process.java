@@ -1,3 +1,4 @@
+package Scheduler;
 
 public class Process {
 	private String name;
@@ -21,7 +22,7 @@ public class Process {
 		this.name= name;
 		this.runTime=runTime;
 		this.arrivalTime=arrivalTime;
-		this.priority = priority;	
+		this.priority = 0;	
 	}
 	
 	Process (String name , double runTime, double arrivalTime, int priority)
