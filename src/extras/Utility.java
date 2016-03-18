@@ -2,7 +2,7 @@ package extras;
 
 import java.util.LinkedList;
 
-import scheduler.Process;
+import main.pack.Process;
 
 public class Utility {
 	

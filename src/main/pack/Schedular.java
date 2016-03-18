@@ -1,4 +1,4 @@
-package scheduler;
+package main.pack;
 import java.util.LinkedList;
 
 abstract public class Schedular {

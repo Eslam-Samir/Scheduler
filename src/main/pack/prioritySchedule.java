@@ -1,27 +1,27 @@
-package scheduler;
+package main.pack;
 import java.util.LinkedList;
 
 import extras.Utility;
 
-public class ShortestJobFirst extends  Schedular{
-
+public class prioritySchedule extends Schedular {
+	
 	private SchedulerType type;
-	ShortestJobFirst (LinkedList<Process>processes, SchedulerType type)
-	{
-		this.processes=processes;
+	prioritySchedule (LinkedList<Process>processes, SchedulerType type){
+		this.processes=processes;	
 		this.numberOfProcesses = processes.size();
 		this.type = type;
 		this.run();
 	}
 	
-	public LinkedList<Process> run() {
+	public LinkedList<Process> run()
+	{
 		double timeLimit = 0;
 		switch (type) 
 		{
 		case preemptive:
 			while(!processes.isEmpty())
 			{
-				int min = Utility.getShortestJobIndexLimited(processes, timeLimit);
+				int min = Utility.getPriorityIndexLimited(processes, timeLimit);
 				double nextArrival = Utility.getNextArrivalTime(processes, timeLimit);
 				
 				if(min == -1)
@@ -41,7 +41,7 @@ public class ShortestJobFirst extends  Schedular{
 				else if(timeLimit + processes.get(min).getRunTime() > nextArrival)
 				{
 					Process currentProcess = processes.get(min);
-					int nextMin = Utility.getShortestJobIndexLimited(processes, nextArrival);
+					int nextMin = Utility.getPriorityIndexLimited(processes, nextArrival);
 					if(nextMin == min)
 					{
 						currentProcess.setStartTime(timeLimit);
@@ -65,33 +65,36 @@ public class ShortestJobFirst extends  Schedular{
 		break;
 		case non_preemptive:
 			while(!processes.isEmpty())
-			{	
-				int first = Utility.getShortestJobIndexLimited(processes, timeLimit);
-				if (first == -1)
-				{
-					int firstAvailable = Utility.getFirstJobIndex(processes);
-					double idleTime = processes.get(firstAvailable).getArrivalTime() - timeLimit;
-					Process idle = new Process("idle",idleTime,timeLimit);
-					idle.setStartTime(timeLimit);
-					output.addLast(idle);
-					timeLimit += idleTime;
-				}
-				else
-				{
-					processes.get(first).setStartTime(timeLimit);
-					output.addLast(processes.get(first));
-					timeLimit += processes.get(first).getRunTime();
-					processes.remove(first);
-				}
-			}
-		break;
+	        {	
+				//scheduling according to priority
+	        	int first = Utility.getPriorityIndexLimited(processes, timeLimit);
+	        	if(first == -1)
+	        	{
+	        		int next = Utility.getFirstJobIndex(processes);
+	        		double arrival = processes.get(next).getArrivalTime();
+	        		double idleTime = arrival - timeLimit;
+	        		Process idle = new Process("idle",idleTime,timeLimit,0);
+	        		idle.setStartTime(timeLimit);
+	        		output.addLast(idle);
+	        		timeLimit = arrival;
+	        	}
+	        	else
+	        	{
+	        		processes.get(first).setStartTime(timeLimit);
+		        	output.addLast(processes.get(first));
+		        	timeLimit += processes.get(first).getRunTime();
+		        	processes.remove(processes.get(first));
+	        	}
+	        	
+	        }
+			break;
 		}
-		for(Process x:output)
+		for(Process x: output)
 		{
-			System.out.println(x.getName()+"    "+x.getRunTime());	
+			System.out.println(x.getName() + "	" + x.getRunTime()  + "	" + x.getArrivalTime());
 		}
-		return output;
-	}
+        return output;
+	}	
 
 	@Override
 	public double calculateWaitingTime() 
@@ -133,5 +136,4 @@ public class ShortestJobFirst extends  Schedular{
 			avgWaitingTime = totalWaitingTime/numberOfProcesses;
 		return avgWaitingTime;
 	}
-
 }
