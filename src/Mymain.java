@@ -16,8 +16,9 @@ public class Mymain {
 		processes1.add(p2);
 		processes1.add(p3);
 		processes1.add(p4);
-		FirstComeFirstServed f1=new FirstComeFirstServed(processes1);
-		System.out.println(f1.calculateWaitingTime());
+		
+		RoundRobin f1=new RoundRobin(processes1, 2);
+		//System.out.println(f1.calculateWaitingTime());
 		//ShortestJobFirst f2 =new ShortestJobFirst(processes1);
 		//System.out.println(f2.calculateWaitingTime());
 	}
