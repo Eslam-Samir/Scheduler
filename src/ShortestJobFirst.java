@@ -1,30 +1,26 @@
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
 
-
 public class ShortestJobFirst extends  Schedular{
-	
+
 	private SchedulerType type;
-	private LinkedList<Process> output; 
-	ShortestJobFirst (LinkedList<Process>processes, SchedulerType type){
+	ShortestJobFirst (LinkedList<Process>processes, SchedulerType type)
+	{
 		this.processes=processes;
-		
+		this.numberOfProcesses = processes.size();
 		this.type = type;
-		output = new LinkedList<>();
-		
 		this.run();
 	}
-		
 	
-	private void run() {
-		switch (type) {
+	
+	public LinkedList<Process> run() {
+		switch (type) 
+		{
 		case preemptive:
-			int timeLimit = 0;
+			double timeLimit = 0;
 			while(!processes.isEmpty())
 			{
 				int min = getShortestJobIndexLimited(processes, timeLimit);
-				int nextArrival = getNextArrivalTime(processes, timeLimit);
+				double nextArrival = getNextArrivalTime(processes, timeLimit);
 				
 				if(min == -1)
 				{
@@ -73,51 +69,51 @@ public class ShortestJobFirst extends  Schedular{
 			break;
 
 		case non_preemptive:
-			Collections.sort(processes, new Comparator<Process>(){
-				   @Override
-				   public int compare(Process o1, Process o2){
-				        if(o1.getRunTime() < o2.getRunTime()){
-				           return -1; 
-				        }
-				        if(o1.getRunTime() > o2.getRunTime()){
-				           return 1; 
-				        }
-				        return 0;
-				   }
-				}); 
-			Collections.sort(processes, new Comparator<Process>(){
-				   @Override
-				   public int compare(Process o1, Process o2){
-				        if(o1.getArrivalTime() < o2.getArrivalTime()){
-				           return -1; 
-				        }
-				        if(o1.getArrivalTime() > o2.getArrivalTime()){
-				           return 1; 
-				        }
-				        return 0;
-				   }
-				}); 
+			double time = 0;
+			while(!processes.isEmpty())
+			{	
+				int first = getShortestJobIndexLimited(processes, time);
+				if (first == -1)
+				{
+					int firstAvailable = getFirstJobIndex(processes);
+					double idleTime = processes.get(firstAvailable).getArrivalTime() - time;
+					Process idle = new Process("idle",idleTime,time);
+					idle.setStartTime(time);
+					output.addLast(idle);
+					time += idleTime;
+				}
+				else
+				{
+					processes.get(first).setStartTime(time);
+					output.addLast(processes.get(first));
+					time += processes.get(first).getRunTime();
+					processes.remove(first);
+				}
+			}
+			for(Process x:output)
+			{
+				System.out.println(x.getName()+"    "+x.getRunTime());	
+			}
 			break;
 		}
+			return output;
+	}
 		
+	private int getFirstJobIndex(LinkedList<Process> processes)
+	{
+		int min = 0;
+		for(Process process: processes)
+		{
+			if(process.getArrivalTime() < processes.get(min).getArrivalTime())
+			{
+				min = processes.indexOf(process);
+			}		
+		}
+		return min;
+	}	
 
-	}
-
-	@Override
-	public int calculateWaitingTime() {
-				int size = processes.size();
-				int waitingTime=0;
-				int totalWaitingTime=0;
-				for(int i=0;i<size;i++){
-					totalWaitingTime +=waitingTime;
-					waitingTime+=(processes.get(i)).getRunTime();
-					
-				}
-				return totalWaitingTime;
-	}
-	
 	// return -1 if there is no process to schedule
-	private int getShortestJobIndexLimited(LinkedList<Process> processes, int timeLimit)
+	private int getShortestJobIndexLimited(LinkedList<Process> processes, double timeLimit)
 	{
 		int min = 0;
 		boolean isProcessAvailable = false;
@@ -128,7 +124,11 @@ public class ShortestJobFirst extends  Schedular{
 			else
 				isProcessAvailable = true;
 			
-			if(process.getRunTime() < processes.get(min).getRunTime())
+			if(processes.get(min).getArrivalTime() > timeLimit)
+			{
+				min = processes.indexOf(process);
+			}
+			else if(process.getRunTime() < processes.get(min).getRunTime())
 			{
 				min = processes.indexOf(process);
 			}
@@ -146,9 +146,9 @@ public class ShortestJobFirst extends  Schedular{
 	}
 	
 	// return zero if all processes have arrived
-	private int getNextArrivalTime(LinkedList<Process> processes, int timeLimit)
+	private double getNextArrivalTime(LinkedList<Process> processes, double timeLimit)
 	{
-		int nextArrival = 0;	
+		double nextArrival = 0;	
 		
 		for(Process process: processes)
 		{
@@ -162,4 +162,23 @@ public class ShortestJobFirst extends  Schedular{
 		}
 		return nextArrival;
 	}
+
+	@Override
+	public double calculateWaitingTime() 
+	{
+		int size = output.size();
+		double waitingTime=0;
+		double totalWaitingTime=0;
+		for(int i = 0;i<size;i++)
+		{
+			if(output.get(i).getName().equals("idle"))
+				continue;
+			waitingTime = output.get(i).getStartTime() - output.get(i).getArrivalTime();
+			totalWaitingTime += waitingTime;
+		}
+		if(numberOfProcesses != 0)
+			avgWaitingTime = totalWaitingTime/numberOfProcesses;
+		return avgWaitingTime;
+	}
+
 }
