@@ -63,7 +63,8 @@ public class FirstComeFirstServed extends  Schedular {
 			waitingTime = output.get(i).getStartTime() - output.get(i).getArrivalTime();
 			totalWaitingTime += waitingTime;
 		}
-		avgWaitingTime = totalWaitingTime/numberOfProcesses;
+		if(numberOfProcesses != 0)
+			avgWaitingTime = totalWaitingTime/numberOfProcesses;
 		return avgWaitingTime;
 	}
 	

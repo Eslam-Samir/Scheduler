@@ -3,7 +3,8 @@ import java.util.LinkedList;
 public class prioritySchedule extends Schedular {
 	
 	prioritySchedule (LinkedList<Process>processes){
-		this.processes=processes;		
+		this.processes=processes;	
+		this.numberOfProcesses = processes.size();
 		this.run();
 	}
 
@@ -66,11 +67,13 @@ public class prioritySchedule extends Schedular {
         		double arrival = processes.get(next).getArrivalTime();
         		double idleTime = arrival - limit;
         		Process idle = new Process("idle",idleTime,limit,0);
+        		idle.setStartTime(limit);
         		output.addLast(idle);
         		limit = arrival;
         	}
         	else
         	{
+        		processes.get(first).setStartTime(limit);
 	        	output.addLast(processes.get(first));
 	        	limit += processes.get(first).getRunTime();
 	        	processes.remove(processes.get(first));
@@ -79,7 +82,7 @@ public class prioritySchedule extends Schedular {
         }
 		for(Process x: output)
 		{
-			System.out.println(x.getName() + "	" + x.getPriority() + "	" + x.getRunTime()  + "	" + x.getArrivalTime());
+			System.out.println(x.getName() + "	" + x.getRunTime()  + "	" + x.getArrivalTime());
 		}
         return output;
 	}	
@@ -87,14 +90,18 @@ public class prioritySchedule extends Schedular {
 	@Override
 	public double calculateWaitingTime() 
 	{
-		int size = processes.size();
+		int size = output.size();
 		double waitingTime=0;
 		double totalWaitingTime=0;
-		for(int i=0;i<size;i++){
-			totalWaitingTime +=waitingTime;
-			waitingTime+=(output.get(i)).getRunTime();
-		
+		for(int i = 0;i<size;i++)
+		{
+			if(output.get(i).getName().equals("idle"))
+				continue;
+			waitingTime = output.get(i).getStartTime() - output.get(i).getArrivalTime();
+			totalWaitingTime += waitingTime;
 		}
-		return totalWaitingTime;
+		if(numberOfProcesses != 0)
+			avgWaitingTime = totalWaitingTime/numberOfProcesses;
+		return avgWaitingTime;
 	}
 }
