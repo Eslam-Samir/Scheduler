@@ -1,34 +1,34 @@
 
 public class Process {
 	private String name;
-	private int runTime;
-	private int arrivalTime;
-	private int finishTime;
+	private double runTime;
+	private double arrivalTime;
+	private double startTime;
 	
 	
 	Process(){
 		this.name= " ";
 		this.runTime=0;
 		this.arrivalTime=0;
-		this.finishTime=0;
+		this.startTime=0;
 	}
 	
-	Process (String name , int runTime,int arrivalTime){
+	Process (String name, double runTime, double arrivalTime){
 		this.name= name;
 		this.runTime=runTime;
-		this.arrivalTime=arrivalTime;
-		
+		this.arrivalTime=arrivalTime;	
 	}
-	public int getFinishTime() {
-		return finishTime;
+
+	public double getStartTime() {
+		return startTime;
 	}
-	public void setFinishTime(int finishTime) {
-		this.finishTime = finishTime;
+	public void setStartTime(double startTime) {
+		this.startTime = startTime;
 	}
-	public int getArrivalTime() {
+	public double getArrivalTime() {
 		return arrivalTime;
 	}
-	public void setArrivalTime(int arrivalTime) {
+	public void setArrivalTime(double arrivalTime) {
 		this.arrivalTime = arrivalTime;
 	}
 	public String getName() {
@@ -37,10 +37,10 @@ public class Process {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public int getRunTime() {
+	public double getRunTime() {
 		return runTime;
 	}
-	public void setRunTime(int runTime) {
+	public void setRunTime(double runTime) {
 		this.runTime = runTime;
 	}
 	
