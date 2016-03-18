@@ -1,6 +1,12 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 -/*.class
 /bin/
 =======
 /bin/
 >>>>>>> master
+=======
+/bin/
+*.bss
+*.bat
+>>>>>>> 269de2752b15931a47469ac84cd2de8b09ea79a1
