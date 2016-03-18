@@ -4,14 +4,13 @@ import java.util.LinkedList;
 import scheduler.Process;
 import extras.Utility;
 
-public class prioritySchedule extends Schedular {
+public class prioritySchedule extends Scheduler {
 	
 	private SchedulerType type;
-	prioritySchedule (LinkedList<Process>processes, SchedulerType type){
+	public prioritySchedule (LinkedList<Process>processes, SchedulerType type){
 		this.processes=processes;	
 		this.numberOfProcesses = processes.size();
 		this.type = type;
-		this.run();
 	}
 	
 	public LinkedList<Process> run()

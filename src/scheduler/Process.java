@@ -17,7 +17,7 @@ public class Process {
 		this.arrivalTime= new SimpleDoubleProperty(arrivalTime);
 	}
 	
-	Process (String name , double runTime, double arrivalTime, int priority)
+	public Process (String name , double runTime, double arrivalTime, int priority)
 	{
 		this.name= new SimpleStringProperty(name);
 		this.runTime= new SimpleDoubleProperty(runTime);

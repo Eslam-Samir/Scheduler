@@ -3,13 +3,12 @@ import java.util.LinkedList;
 
 import scheduler.Process;
 
-public class FirstComeFirstServed extends  Schedular {
+public class FirstComeFirstServed extends  Scheduler {
 	
-	FirstComeFirstServed(LinkedList<Process>processes)
+	public FirstComeFirstServed(LinkedList<Process>processes)
 	{
 		this.processes=processes;
 		this.numberOfProcesses = processes.size();
-		this.run();
 	}
 	private int getFirstJobIndex(LinkedList<Process> processes)
 	{

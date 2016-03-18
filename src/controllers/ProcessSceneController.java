@@ -2,12 +2,19 @@ package controllers;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.ResourceBundle;
 
 import custom.views.GanttChart.ExtraData;
 import custom.views.GanttChart;
 import extras.Utility;
+import scheduler.FirstComeFirstServed;
 import scheduler.Process;
+import scheduler.RoundRobin;
+import scheduler.Scheduler;
+import scheduler.SchedulerType;
+import scheduler.ShortestJobFirst;
+import scheduler.prioritySchedule;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -55,14 +62,14 @@ public class ProcessSceneController implements Initializable {
 	@FXML
 	private TableColumn<Process, String> nameColumn;
 	@FXML
-	private TableColumn<Process, Integer> arrivalColumn;
+	private TableColumn<Process, Double> arrivalColumn;
 	@FXML
-	private TableColumn<Process, Integer> burstColumn;
+	private TableColumn<Process, Double> burstColumn;
 	@FXML
 	private TableColumn<Process, Integer> priorityColumn;
 	
 	private int numberOfProcesses;
-	private String SchedulerType;
+	private String schedulerType;
 	private ObservableList<Process> list = FXCollections.observableArrayList();
 	
 	public void addProcess(ActionEvent action)
@@ -77,8 +84,8 @@ public class ProcessSceneController implements Initializable {
 		{
 			Utility.createAlert("Please Enter All Fields");
 		}
-		else if((this.SchedulerType.equals("Priority Scheduling (Preemptive)") 
-				|| this.SchedulerType.equals("Priority Scheduling (Non-Preemptive)")) && priority.getText().isEmpty())
+		else if((this.schedulerType.equals("Priority Scheduling (Preemptive)") 
+				|| this.schedulerType.equals("Priority Scheduling (Non-Preemptive)")) && priority.getText().isEmpty())
 		{
 			Utility.createAlert("Please Enter All Fields");
 		}
@@ -92,8 +99,21 @@ public class ProcessSceneController implements Initializable {
 					return;
 				}
 			}
-			Process process = new Process(processName.getText(), 
-					Integer.valueOf(burst.getText()), Integer.valueOf(arrivalTime.getText()));
+			
+			Process process;
+			if((this.schedulerType.equals("Priority Scheduling (Preemptive)") 
+					|| this.schedulerType.equals("Priority Scheduling (Non-Preemptive)")))
+			{
+				process = new Process(processName.getText(), 
+						Double.valueOf(burst.getText()), Double.valueOf(arrivalTime.getText())
+						, Integer.valueOf(priority.getText()));
+			}
+			else
+			{
+				process = new Process(processName.getText(), 
+						Double.valueOf(burst.getText()), Double.valueOf(arrivalTime.getText()));
+			}
+			
 			list.add(process);
 			table.setItems(list);
 			if(list.size() == numberOfProcesses)
@@ -114,6 +134,41 @@ public class ProcessSceneController implements Initializable {
 			Utility.createAlert("You have not entered all processes");
 			return;
 		}
+		
+		Scheduler scheduler;
+		LinkedList<Process> inputs = new LinkedList<>();
+		LinkedList<Process> outputs;
+
+		inputs.addAll(list);
+		
+		if(schedulerType.equals("First Come First Served"))
+		{
+			scheduler = new FirstComeFirstServed(inputs);
+		}
+		else if(schedulerType.equals("Shortest Job First (Preemptive)"))
+		{
+			scheduler = new ShortestJobFirst(inputs, SchedulerType.preemptive);
+		}
+		else if(schedulerType.equals("Shortest Job First (Non-Preemptive)"))
+		{
+			scheduler = new ShortestJobFirst(inputs, SchedulerType.non_preemptive);
+		}
+		else if(schedulerType.equals("Priority Scheduling (Preemptive)"))
+		{
+			scheduler = new prioritySchedule(inputs, SchedulerType.preemptive);
+		}
+		else if(schedulerType.equals("Priority Scheduling (Non-Preemptive)"))
+		{
+			scheduler = new prioritySchedule(inputs, SchedulerType.non_preemptive);
+		}
+		else
+		{
+			scheduler = new RoundRobin(inputs, 1); //TODO add field for round robin
+		}
+		
+		outputs = scheduler.run();
+		double avg = scheduler.calculateWaitingTime();
+		
 		Stage stage = new Stage();
 		stage.setTitle("Gantt Chart");
 
@@ -122,42 +177,44 @@ public class ProcessSceneController implements Initializable {
 
         //TODO style this
         VBox root = new VBox();
-        Label label = new Label("average waiting time:  ");
+        Label label = new Label("average waiting time:  " + String.valueOf(avg));
       
         root.getChildren().add(label);
         
         final GanttChart<Number,String> chart = new GanttChart<Number,String>(xAxis,yAxis);
         
         xAxis.setLabel("");
-        xAxis.setTickLabelFill(Color.CHOCOLATE);
+        xAxis.setTickLabelFill(Color.BLACK);
         xAxis.setMinorTickCount(4);
 
         yAxis.setLabel("");
-        yAxis.setTickLabelFill(Color.CHOCOLATE);
+        yAxis.setTickLabelFill(Color.BLACK);
         yAxis.setTickLabelGap(10);
 
-        chart.setTitle(this.SchedulerType);
+        chart.setTitle(this.schedulerType);
         chart.setLegendVisible(false);
         chart.setBlockHeight(20);
 
-        while(!list.isEmpty())
+        while(!outputs.isEmpty())
         {
         	XYChart.Series series = new XYChart.Series();
-        	Process process = list.get(0);
+        	Process process = outputs.get(0);
         	int i = 0;
-        	while(i < list.size())
+        	while(i < outputs.size())
         	{
-        		Process x = list.get(i);
+        		Process x = outputs.get(i);
         		if(x.getName().equals("idle"))
         		{
-        			series.getData().add(new XYChart.Data(x.getArrivalTime()
+        			series.getData().add(new XYChart.Data(x.getStartTime()
 	        				, x.getName(), new ExtraData(x.getRunTime(), "status-red")));
-	        		list.remove(x);
+        			outputs.remove(x);
+        			list.remove(x);
         		}
         		else if(x.getName().equals(process.getName()))
         		{
-	        		series.getData().add(new XYChart.Data(x.getArrivalTime()
+	        		series.getData().add(new XYChart.Data(x.getStartTime()
 	        				, x.getName(), new ExtraData(x.getRunTime(), "status-green")));
+	        		outputs.remove(x);
 	        		list.remove(x);
         		}
         		else
@@ -165,6 +222,7 @@ public class ProcessSceneController implements Initializable {
         			i++;
         		}
         	}
+        	table.setItems(list);
         	chart.getData().add(series);
         }   
 
@@ -212,13 +270,13 @@ public class ProcessSceneController implements Initializable {
 		number.setText(number.getText() + String.valueOf(numberOfProcesses));
 	}
 	public String getSchedulingType() {
-		return SchedulerType;
+		return schedulerType;
 	}
 	public void setSchedulerType(String schedulingType) {
-		this.SchedulerType = schedulingType;
+		this.schedulerType = schedulingType;
 		
-		if(!this.SchedulerType.equals("Priority Scheduling (Preemptive)") 
-				&& !this.SchedulerType.equals("Priority Scheduling (Non-Preemptive)"))
+		if(!this.schedulerType.equals("Priority Scheduling (Preemptive)") 
+				&& !this.schedulerType.equals("Priority Scheduling (Non-Preemptive)"))
 		{
 			table.getColumns().remove(3);
 			grid.getChildren().remove(6);
@@ -232,8 +290,8 @@ public class ProcessSceneController implements Initializable {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		nameColumn.setCellValueFactory(new PropertyValueFactory<Process, String>("name"));
-		arrivalColumn.setCellValueFactory(new PropertyValueFactory<Process, Integer>("arrivalTime"));
-		burstColumn.setCellValueFactory(new PropertyValueFactory<Process, Integer>("runTime"));
+		arrivalColumn.setCellValueFactory(new PropertyValueFactory<Process, Double>("arrivalTime"));
+		burstColumn.setCellValueFactory(new PropertyValueFactory<Process, Double>("runTime"));
 		priorityColumn.setCellValueFactory(new PropertyValueFactory<Process, Integer>("priority"));
 	}
 }

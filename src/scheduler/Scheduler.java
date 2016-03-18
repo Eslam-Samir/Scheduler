@@ -3,7 +3,7 @@ import java.util.LinkedList;
 
 import scheduler.Process;
 
-abstract public class Schedular {
+abstract public class Scheduler {
 	protected LinkedList<Process> processes ;
 	protected LinkedList<Process> output = new LinkedList<Process>();
 

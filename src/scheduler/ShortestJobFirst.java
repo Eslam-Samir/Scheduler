@@ -4,15 +4,14 @@ import java.util.LinkedList;
 import scheduler.Process;
 import extras.Utility;
 
-public class ShortestJobFirst extends  Schedular{
+public class ShortestJobFirst extends  Scheduler{
 
 	private SchedulerType type;
-	ShortestJobFirst (LinkedList<Process>processes, SchedulerType type)
+	public ShortestJobFirst (LinkedList<Process>processes, SchedulerType type)
 	{
 		this.processes=processes;
 		this.numberOfProcesses = processes.size();
 		this.type = type;
-		this.run();
 	}
 	
 	public LinkedList<Process> run() {

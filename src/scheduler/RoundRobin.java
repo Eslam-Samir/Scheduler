@@ -4,18 +4,14 @@ import java.util.LinkedList;
 import scheduler.Process;
 
 
-public class RoundRobin extends Schedular
+public class RoundRobin extends Scheduler
 {
 	private int q;
 	
-	RoundRobin(LinkedList<Process> processes, int q)
+	public RoundRobin(LinkedList<Process> processes, int q)
 	{
 		this.processes = processes;
 		this.q = q;
-
-		//making an array for the run time of all processes
-		
-		this.run();
 	}
 		
 	@Override
