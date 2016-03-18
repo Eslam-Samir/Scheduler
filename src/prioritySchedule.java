@@ -1,5 +1,3 @@
-//import java.util.Collections;
-//import java.util.Comparator;
 import java.util.LinkedList;
 
 
@@ -27,14 +25,18 @@ public class prioritySchedule extends Schedular
 			else
 				isProcessAvailable = true;
 			
-			if(process.getPriority() < processes.get(min).getPriority())
+			if(processes.get(min).getArrivalTime() > timeLimit)
+			{
+				min = processes.indexOf(process);
+			}
+			else if(process.getPriority() < processes.get(min).getPriority())
 			{
 				min = processes.indexOf(process);
 			}
 			else if(process.getPriority() == processes.get(min).getPriority() 
 					&& process.getArrivalTime() < processes.get(min).getArrivalTime())
 			{
-					min = processes.indexOf(process);
+				min = processes.indexOf(process);
 			}	
 		}
 		
@@ -44,56 +46,48 @@ public class prioritySchedule extends Schedular
 			return -1;
 	}
 	
-	private int getNextArrivalTime(LinkedList<Process> processes, int timeLimit)
+	private int getFirstJobIndex(LinkedList<Process> processes)
 	{
-		int nextArrival = 0;	
-		
+		int min = 0;
 		for(Process process: processes)
 		{
-			if(process.getArrivalTime() <= timeLimit)
-				continue;				
-				
-			if(nextArrival > process.getArrivalTime() || nextArrival == 0)
+			if(process.getArrivalTime() < processes.get(min).getArrivalTime())
 			{
-				nextArrival = process.getArrivalTime();
-			}	
+				min = processes.indexOf(process);
+			}		
 		}
-		return nextArrival;
+		return min;
 	}
-	
-	
-	
-	
-	
+
 	
 	public LinkedList<Process> run()
 	{
 		int limit = 0;
-		for(int i =0;i<processes.size();i++)
-			
+		while(!processes.isEmpty())
         {	
 			//scheduling according to priority
 			
         	int first = getPriorityIndexLimited(processes, limit);
         	if(first == -1)
         	{
-        		int arrival = getNextArrivalTime(processes,limit);
-        		int idleTime = processes.get(arrival).getArrivalTime() -limit;
-        		Process idle = new Process("idle",idleTime,limit,processes.get(i).getPriority());
+        		int next = getFirstJobIndex(processes);
+        		int arrival = processes.get(next).getArrivalTime();
+        		int idleTime = arrival - limit;
+        		Process idle = new Process("idle",idleTime,limit,0);
         		output.addLast(idle);
-        		limit = getNextArrivalTime(processes, limit);
-        		
+        		limit = arrival;
         	}
-        	else{
-        	output.addLast(processes.get(first));
-        	limit = limit+processes.get(first).getRunTime();
-        	processes.remove(processes.get(first));
+        	else
+        	{
+	        	output.addLast(processes.get(first));
+	        	limit = limit+processes.get(first).getRunTime();
+	        	processes.remove(processes.get(first));
         	}
         	
         }
 			for(Process x: output)
 			{
-				System.out.println(x.getName() + "   " + x.getPriority() + "   " + x.getArrivalTime());
+				System.out.println(x.getName() + "	" + x.getPriority() + "	" + x.getRunTime()  + "	" + x.getArrivalTime());
 			}
         return output;
 	}
