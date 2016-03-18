@@ -66,6 +66,7 @@ public class RoundRobin extends Schedular
 		double ttime=0;
 		for(int i=0;i<processes.size();i++){
 			if(processes.get(i).getRunTime()<q){
+				if (processes.get(i).getName()=="idle") continue ;
 			  double idleTime=q-processes.get(i).getRunTime();
 			  Process idle=new Process("idle",idleTime,ttime+processes.get(i).getRunTime());
 			  processes.add(i+1, idle);
