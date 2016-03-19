@@ -1,6 +1,6 @@
 import java.util.Collections;
-	import java.util.LinkedList;
-	import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.Comparator;
 	
 	public class RoundRobin extends Schedular
 	{
@@ -20,7 +20,7 @@ import java.util.Collections;
 		}
 		
 		public LinkedList<Process> run()
-		{
+		{ 
 			Collections.sort(processes, new Comparator<Process>(){
 				   @Override
 				   public int compare(Process o1, Process o2){
@@ -32,11 +32,21 @@ import java.util.Collections;
 				        }
 				        return 0;
 				   }
-				}); 
+				});
+			
+			for(int i=0;i<processes.size();i++){
+				if (processes.get(i).getArrivalTime()%q !=0){
+					processes.get(i).setArrivalTime(processes.get(i).getArrivalTime()+(q-processes.get(i).getArrivalTime()%q));
+				output.addLast(processes.get(i));
+				}
+			}
+			
+			
 			double time =0;
 			for(int i =0;i<processes.size();i++){
 				if(processes.get(i).getArrivalTime()>time){
 					double idleTime=processes.get(i).getArrivalTime()-time;
+					
 					Process idle=new Process("idle",idleTime,time);
 					processes.add(i, idle);
 					time+=idleTime;
@@ -47,40 +57,46 @@ import java.util.Collections;
 				}
 				
 			}
+			
 			double tttime=0;
+			int j=0;
 			double remainderTime;
 			for(int i = 0; i < processes.size(); i++){
 				if(processes.get(i).getName()=="idle"){
 					tttime+=processes.get(i).getRunTime();
-					//continue;
-				}
-				else{
-				if (processes.get(i).getRunTime()>q){
-					int firstIdle= getFirstIdle(processes);
-					remainderTime=processes.get(i).getRunTime()-q; 
-					Process p=new Process(processes.get(i).getName(),remainderTime
-										,processes.get(i).getArrivalTime()+q);
-					processes.get(i).setRunTime(q);
-					tttime+=q;
-					if(firstIdle==-1||firstIdle<i){
-						processes.addLast(p);
-					}
-					else{
-						processes.add(firstIdle, p);
-						if (processes.get(firstIdle+1).getRunTime()<=q){
-							processes.remove(firstIdle+1);
-						}
-						else{
-						processes.get(firstIdle+1).setRunTime(processes.get(firstIdle+1).getRunTime()-q);
-						}
-						
-						
-					}
+					//processes.get(i+1).setStartTime(processes.get(i+1).getArrivalTime());
+					output.get(j).setStartTime(output.get(j).getArrivalTime());
+					j++;
 					
 				}
 				else{
-					tttime+=processes.get(i).getRunTime();
-				}
+					if(processes.get(i).getRunTime()==output.get(j).getRunTime()
+							&&processes.get(i).getName()==output.get(j).getName()){
+						processes.get(i).setStartTime(tttime);
+						output.get(j).setStartTime(tttime);
+						j++;
+						
+					}
+					if (processes.get(i).getRunTime()>q){
+					  
+						int firstIdle= getFirstIdle(processes,i);
+						remainderTime=processes.get(i).getRunTime()-q; 
+						Process p=new Process(processes.get(i).getName(),remainderTime
+											,processes.get(i).getArrivalTime()+q);
+						processes.get(i).setRunTime(q);
+						tttime+=q;
+						if(firstIdle==-1||firstIdle<i){
+								processes.addLast(p);
+							}
+							else{
+								processes.add(firstIdle, p);									
+							}
+						
+					}
+					else{
+						tttime+=processes.get(i).getRunTime();
+						 
+					}
 			}
 				
 			
@@ -98,20 +114,7 @@ import java.util.Collections;
 				        return 0;
 				   }
 				}); 
-			time =0;
-			for(int i =0;i<processes.size();i++){
-				if(processes.get(i).getArrivalTime()>time){
-					double idleTime=processes.get(i).getArrivalTime()-time;
-					Process idle=new Process("idle",idleTime,time);
-					processes.add(i, idle);
-					time+=idleTime;
-				
-				}
-				else{
-					time+=processes.get(i).getRunTime();
-				}
-				
-			}
+		
 			double ttime=0;
 			for(int i=0;i<processes.size();i++){
 				if(processes.get(i).getRunTime()<q){
@@ -128,23 +131,28 @@ import java.util.Collections;
 				}
 			}
 			for(Process x:processes){
-				System.out.println(x.getName()+"      "+x.getArrivalTime()+"    "+x.getRunTime());
+				System.out.println(x.getName()+"      "+x.getArrivalTime()+"    "+x.getRunTime()+"               "+x.getStartTime());
+			}
+			System.out.println("0=========================");
+			for(Process x:output){
+				System.out.println(x.getName()+"      "+x.getArrivalTime()+"    "+x.getRunTime()+"               "+x.getStartTime());
 			}
 			return processes;
 		  }
-		private int getFirstIdle(LinkedList<Process> processes)
+		private int getFirstIdle(LinkedList<Process> processes,int i)
 		{
 			
-			for(Process process: processes)
+			for(int j=i;i<processes.size();i++)
 			{
-				if(process.getName() =="idle")
+				if(processes.get(j).getName() =="idle")
 				{
-					return processes.indexOf(process);
+					return processes.indexOf(processes.get(j));
 				}
 			}
 			return -1;
 		
-		}		
+		}	
+		
 		  
 	}
 
