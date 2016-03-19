@@ -64,19 +64,11 @@ import java.util.Comparator;
 			for(int i = 0; i < processes.size(); i++){
 				if(processes.get(i).getName()=="idle"){
 					tttime+=processes.get(i).getRunTime();
-					//processes.get(i+1).setStartTime(processes.get(i+1).getArrivalTime());
-					output.get(j).setStartTime(output.get(j).getArrivalTime());
-					j++;
+				
 					
 				}
 				else{
-					if(processes.get(i).getRunTime()==output.get(j).getRunTime()
-							&&processes.get(i).getName()==output.get(j).getName()){
-						processes.get(i).setStartTime(tttime);
-						output.get(j).setStartTime(tttime);
-						j++;
-						
-					}
+					
 					if (processes.get(i).getRunTime()>q){
 					  
 						int firstIdle= getFirstIdle(processes,i);
@@ -130,11 +122,14 @@ import java.util.Comparator;
 					time+=processes.get(i).getRunTime();
 				}
 			}
+			
+			
+			double t=0;
 			for(Process x:processes){
-				System.out.println(x.getName()+"      "+x.getArrivalTime()+"    "+x.getRunTime()+"               "+x.getStartTime());
+				x.setStartTime(t);
+				t+=x.getRunTime();
 			}
-			System.out.println("0=========================");
-			for(Process x:output){
+			for(Process x:processes){
 				System.out.println(x.getName()+"      "+x.getArrivalTime()+"    "+x.getRunTime()+"               "+x.getStartTime());
 			}
 			return processes;
