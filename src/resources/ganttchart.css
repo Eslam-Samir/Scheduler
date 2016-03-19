@@ -17,4 +17,9 @@ Label {
 
 VBox {
 	-fx-alignment: center;
+	-fx-background-color: white;
+}
+GanttChart {
+	-fx-background-color: white;
+
 }

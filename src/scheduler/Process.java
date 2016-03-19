@@ -10,19 +10,32 @@ public class Process {
 	private SimpleDoubleProperty arrivalTime;
 	private SimpleDoubleProperty startTime;
 	private SimpleIntegerProperty priority;
+	private int pid = 0;
 	
-	public Process (String name , double runTime, double arrivalTime){
+	public Process (int pid, String name , double runTime, double arrivalTime){
 		this.name= new SimpleStringProperty(name);
 		this.runTime= new SimpleDoubleProperty(runTime);
 		this.arrivalTime= new SimpleDoubleProperty(arrivalTime);
+		this.startTime= new SimpleDoubleProperty(0);
+		this.pid = pid;
 	}
 	
-	public Process (String name , double runTime, double arrivalTime, int priority)
+	public Process (int pid, String name , double runTime, double arrivalTime, int priority)
 	{
 		this.name= new SimpleStringProperty(name);
 		this.runTime= new SimpleDoubleProperty(runTime);
 		this.arrivalTime= new SimpleDoubleProperty(arrivalTime);
+		this.startTime= new SimpleDoubleProperty(0);
 		this.priority = new SimpleIntegerProperty(priority);
+		this.pid = pid;
+	}
+	
+	public int getPid() {
+		return pid;
+	}
+
+	public void setPid(int pid) {
+		this.pid = pid;
 	}
 	
 	public String getName() {

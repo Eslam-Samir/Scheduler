@@ -38,7 +38,7 @@ public class FirstComeFirstServed extends  Scheduler {
 	        else
 	        {   	
 	        	double idleTime= processes.get(first).getArrivalTime()-time;
-		        Process idle=new Process("idle",idleTime,time);
+		        Process idle=new Process(0, "idle",idleTime,time);
 		        idle.setStartTime(time);
 		        output.addLast(idle);
 		        time += idleTime;  

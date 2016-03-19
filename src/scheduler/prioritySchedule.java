@@ -26,7 +26,7 @@ public class prioritySchedule extends Scheduler {
 				
 				if(min == -1)
 				{
-					Process idleProcess = new Process("idle", nextArrival - timeLimit, timeLimit);
+					Process idleProcess = new Process(0, "idle", nextArrival - timeLimit, timeLimit);
 					idleProcess.setStartTime(timeLimit);
 					output.addLast(idleProcess);
 					timeLimit = nextArrival;
@@ -51,7 +51,7 @@ public class prioritySchedule extends Scheduler {
 					}
 					else
 					{
-						Process pausedProcess = new Process(currentProcess.getName()
+						Process pausedProcess = new Process(currentProcess.getPid(), currentProcess.getName()
 								, nextArrival - timeLimit, currentProcess.getArrivalTime());
 						currentProcess.setRunTime(currentProcess.getRunTime()-pausedProcess.getRunTime());
 						pausedProcess.setStartTime(timeLimit);
@@ -73,7 +73,7 @@ public class prioritySchedule extends Scheduler {
 	        		int next = Utility.getFirstJobIndex(processes);
 	        		double arrival = processes.get(next).getArrivalTime();
 	        		double idleTime = arrival - timeLimit;
-	        		Process idle = new Process("idle",idleTime,timeLimit,0);
+	        		Process idle = new Process(0, "idle",idleTime,timeLimit,0);
 	        		idle.setStartTime(timeLimit);
 	        		output.addLast(idle);
 	        		timeLimit = arrival;

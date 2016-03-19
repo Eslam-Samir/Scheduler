@@ -21,6 +21,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.CategoryAxis;
@@ -43,6 +44,8 @@ public class ProcessSceneController implements Initializable {
 	@FXML
 	private GridPane grid;
 	@FXML
+	private GridPane quantumGrid;
+	@FXML
 	private Label type;
 	@FXML
 	private Label number;
@@ -54,6 +57,8 @@ public class ProcessSceneController implements Initializable {
 	private TextField burst;
 	@FXML
 	private TextField priority;
+	@FXML
+	private TextField quantum;
 	@FXML
 	private Button add;
 	
@@ -71,6 +76,8 @@ public class ProcessSceneController implements Initializable {
 	private int numberOfProcesses;
 	private String schedulerType;
 	private ObservableList<Process> list = FXCollections.observableArrayList();
+	
+	private int pid = 1;
 	
 	public void addProcess(ActionEvent action)
 	{
@@ -104,16 +111,16 @@ public class ProcessSceneController implements Initializable {
 			if((this.schedulerType.equals("Priority Scheduling (Preemptive)") 
 					|| this.schedulerType.equals("Priority Scheduling (Non-Preemptive)")))
 			{
-				process = new Process(processName.getText(), 
+				process = new Process(pid, processName.getText(), 
 						Double.valueOf(burst.getText()), Double.valueOf(arrivalTime.getText())
 						, Integer.valueOf(priority.getText()));
 			}
 			else
 			{
-				process = new Process(processName.getText(), 
+				process = new Process(pid, processName.getText(), 
 						Double.valueOf(burst.getText()), Double.valueOf(arrivalTime.getText()));
 			}
-			
+			pid++;
 			list.add(process);
 			table.setItems(list);
 			if(list.size() == numberOfProcesses)
@@ -134,12 +141,28 @@ public class ProcessSceneController implements Initializable {
 			Utility.createAlert("You have not entered all processes");
 			return;
 		}
-		
 		Scheduler scheduler;
 		LinkedList<Process> inputs = new LinkedList<>();
 		LinkedList<Process> outputs;
-
-		inputs.addAll(list);
+		int pid = 1;
+		for(int i = 0; i < numberOfProcesses; i++)
+		{
+			if((this.schedulerType.equals("Priority Scheduling (Preemptive)") 
+					|| this.schedulerType.equals("Priority Scheduling (Non-Preemptive)")))
+			{
+				Process process = new Process(pid, list.get(i).getName(), 
+						list.get(i).getRunTime(), list.get(i).getArrivalTime()
+						, list.get(i).getPriority());
+				inputs.add(process);
+			}
+			else
+			{
+				Process process = new Process(pid, list.get(i).getName(), 
+						list.get(i).getRunTime(), list.get(i).getArrivalTime());
+				inputs.add(process);
+			}
+			pid++;
+		}
 		
 		if(schedulerType.equals("First Come First Served"))
 		{
@@ -163,7 +186,15 @@ public class ProcessSceneController implements Initializable {
 		}
 		else
 		{
-			scheduler = new RoundRobin(inputs, 1); //TODO add field for round robin
+			if(!quantum.getText().isEmpty())
+			{
+				scheduler = new RoundRobin(inputs, Double.valueOf(quantum.getText())); 
+			}
+			else
+			{
+				Utility.createAlert("Please enter the time quantum");
+				return;
+			}
 		}
 		
 		outputs = scheduler.run();
@@ -183,17 +214,19 @@ public class ProcessSceneController implements Initializable {
         
         final GanttChart<Number,String> chart = new GanttChart<Number,String>(xAxis,yAxis);
         
-        xAxis.setLabel("");
+        Insets inset = new Insets(5, 25, 5, 0);
+        chart.setPadding(inset);
+        xAxis.setLabel("Time");
         xAxis.setTickLabelFill(Color.BLACK);
-        xAxis.setMinorTickCount(4);
+        xAxis.setMinorTickCount(10);
 
-        yAxis.setLabel("");
+        yAxis.setLabel("Process Name");
         yAxis.setTickLabelFill(Color.BLACK);
         yAxis.setTickLabelGap(10);
 
         chart.setTitle(this.schedulerType);
         chart.setLegendVisible(false);
-        chart.setBlockHeight(20);
+        chart.setBlockHeight(30);
 
         while(!outputs.isEmpty())
         {
@@ -203,33 +236,30 @@ public class ProcessSceneController implements Initializable {
         	while(i < outputs.size())
         	{
         		Process x = outputs.get(i);
-        		if(x.getName().equals("idle"))
+        		if(x.getPid() == 0)
         		{
         			series.getData().add(new XYChart.Data(x.getStartTime()
 	        				, x.getName(), new ExtraData(x.getRunTime(), "status-red")));
         			outputs.remove(x);
-        			list.remove(x);
         		}
-        		else if(x.getName().equals(process.getName()))
+        		else if(x.getPid() == process.getPid())
         		{
 	        		series.getData().add(new XYChart.Data(x.getStartTime()
 	        				, x.getName(), new ExtraData(x.getRunTime(), "status-green")));
 	        		outputs.remove(x);
-	        		list.remove(x);
         		}
         		else
         		{
         			i++;
         		}
         	}
-        	table.setItems(list);
         	chart.getData().add(series);
         }   
 
         root.getStylesheets().add(getClass().getResource("/resources/ganttchart.css").toExternalForm());
         
         root.getChildren().add(chart);
-        Scene scene  = new Scene(root,620,350);
+        Scene scene  = new Scene(root,800,500);
         
         stage.setScene(scene);
         stage.show();
@@ -281,6 +311,11 @@ public class ProcessSceneController implements Initializable {
 			table.getColumns().remove(3);
 			grid.getChildren().remove(6);
 			grid.getChildren().remove(6);
+		}
+		if(!this.schedulerType.equals("Round Robin"))
+		{
+			quantumGrid.getChildren().remove(0);
+			quantumGrid.getChildren().remove(0);
 		}
 		type.setText(type.getText() + schedulingType);
 		
