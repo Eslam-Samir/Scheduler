@@ -1,8 +1,9 @@
 package extras;
-
 import java.util.LinkedList;
 
-import main.pack.Process;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import scheduler.Process;
 
 public class Utility {
 	
@@ -114,5 +115,22 @@ public class Utility {
 			return min;
 		else
 			return -1;
+	}
+	
+	public static void createAlert(String warnings)
+	{
+		Alert alert = new Alert(AlertType.WARNING);
+		alert.setTitle("Wrong input");
+		alert.setHeaderText(warnings);
+		alert.show();
+	}
+	
+	public static void createAlert(String warnings, String content)
+	{
+		Alert alert = new Alert(AlertType.WARNING);
+		alert.setTitle("Wrong input");
+		alert.setHeaderText(warnings);
+		alert.setContentText(content);
+		alert.show();
 	}
 }

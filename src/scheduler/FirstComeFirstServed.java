@@ -1,13 +1,14 @@
-package main.pack;
+package scheduler;
 import java.util.LinkedList;
 
-public class FirstComeFirstServed extends  Schedular {
+import scheduler.Process;
+
+public class FirstComeFirstServed extends  Scheduler {
 	
-	FirstComeFirstServed(LinkedList<Process>processes)
+	public FirstComeFirstServed(LinkedList<Process>processes)
 	{
 		this.processes=processes;
 		this.numberOfProcesses = processes.size();
-		this.run();
 	}
 	private int getFirstJobIndex(LinkedList<Process> processes)
 	{
@@ -37,7 +38,7 @@ public class FirstComeFirstServed extends  Schedular {
 	        else
 	        {   	
 	        	double idleTime= processes.get(first).getArrivalTime()-time;
-		        Process idle=new Process("idle",idleTime,time);
+		        Process idle=new Process(0, "idle",idleTime,time);
 		        idle.setStartTime(time);
 		        output.addLast(idle);
 		        time += idleTime;  

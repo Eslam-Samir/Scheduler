@@ -1,4 +1,4 @@
-package main.pack;
+package scheduler;
 public enum SchedulerType {
 	preemptive,
 	non_preemptive;

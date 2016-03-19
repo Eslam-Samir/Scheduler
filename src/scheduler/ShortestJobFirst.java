@@ -1,17 +1,17 @@
-package main.pack;
+package scheduler;
 import java.util.LinkedList;
 
+import scheduler.Process;
 import extras.Utility;
 
-public class ShortestJobFirst extends  Schedular{
+public class ShortestJobFirst extends  Scheduler{
 
 	private SchedulerType type;
-	ShortestJobFirst (LinkedList<Process>processes, SchedulerType type)
+	public ShortestJobFirst (LinkedList<Process>processes, SchedulerType type)
 	{
 		this.processes=processes;
 		this.numberOfProcesses = processes.size();
 		this.type = type;
-		this.run();
 	}
 	
 	public LinkedList<Process> run() {
@@ -26,7 +26,7 @@ public class ShortestJobFirst extends  Schedular{
 				
 				if(min == -1)
 				{
-					Process idleProcess = new Process("idle", nextArrival - timeLimit, timeLimit);
+					Process idleProcess = new Process(0, "idle", nextArrival - timeLimit, timeLimit);
 					idleProcess.setStartTime(timeLimit);
 					output.addLast(idleProcess);
 					timeLimit = nextArrival;
@@ -51,7 +51,7 @@ public class ShortestJobFirst extends  Schedular{
 					}
 					else
 					{
-						Process pausedProcess = new Process(currentProcess.getName()
+						Process pausedProcess = new Process(currentProcess.getPid(), currentProcess.getName()
 								, nextArrival - timeLimit, currentProcess.getArrivalTime());
 						currentProcess.setRunTime(currentProcess.getRunTime()-pausedProcess.getRunTime());
 						pausedProcess.setStartTime(timeLimit);
@@ -71,7 +71,7 @@ public class ShortestJobFirst extends  Schedular{
 				{
 					int firstAvailable = Utility.getFirstJobIndex(processes);
 					double idleTime = processes.get(firstAvailable).getArrivalTime() - timeLimit;
-					Process idle = new Process("idle",idleTime,timeLimit);
+					Process idle = new Process(0, "idle",idleTime,timeLimit);
 					idle.setStartTime(timeLimit);
 					output.addLast(idle);
 					timeLimit += idleTime;

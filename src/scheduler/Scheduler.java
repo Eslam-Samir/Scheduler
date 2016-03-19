@@ -1,7 +1,9 @@
-package main.pack;
+package scheduler;
 import java.util.LinkedList;
 
-abstract public class Schedular {
+import scheduler.Process;
+
+abstract public class Scheduler {
 	protected LinkedList<Process> processes ;
 	protected LinkedList<Process> output = new LinkedList<Process>();
 
