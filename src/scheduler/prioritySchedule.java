@@ -2,6 +2,7 @@ package scheduler;
 import java.util.LinkedList;
 
 import scheduler.Process;
+import extras.Constants;
 import extras.Utility;
 
 public class prioritySchedule extends Scheduler {
@@ -26,7 +27,7 @@ public class prioritySchedule extends Scheduler {
 				
 				if(min == -1)
 				{
-					Process idleProcess = new Process(0, "idle", nextArrival - timeLimit, timeLimit);
+					Process idleProcess = new Process(0, Constants.IDLE, nextArrival - timeLimit, timeLimit);
 					idleProcess.setStartTime(timeLimit);
 					output.addLast(idleProcess);
 					timeLimit = nextArrival;
@@ -73,7 +74,7 @@ public class prioritySchedule extends Scheduler {
 	        		int next = Utility.getFirstJobIndex(processes);
 	        		double arrival = processes.get(next).getArrivalTime();
 	        		double idleTime = arrival - timeLimit;
-	        		Process idle = new Process(0, "idle",idleTime,timeLimit,0);
+	        		Process idle = new Process(0, Constants.IDLE,idleTime,timeLimit,0);
 	        		idle.setStartTime(timeLimit);
 	        		output.addLast(idle);
 	        		timeLimit = arrival;
@@ -107,7 +108,7 @@ public class prioritySchedule extends Scheduler {
 		case preemptive:
 			for(int i = 0;i<size;i++)
 			{
-				if(output.get(i).getName().equals("idle"))
+				if(output.get(i).getPid() == 0)
 					continue;
 				int previousOccurance = Utility.getPrevious(output, i - 1, output.get(i).getName());
 				if(previousOccurance == -1)
@@ -125,7 +126,7 @@ public class prioritySchedule extends Scheduler {
 		case non_preemptive:
 			for(int i = 0;i<size;i++)
 			{
-				if(output.get(i).getName().equals("idle"))
+				if(output.get(i).getPid() == 0)
 					continue;
 				waitingTime = output.get(i).getStartTime() - output.get(i).getArrivalTime();
 				totalWaitingTime += waitingTime;

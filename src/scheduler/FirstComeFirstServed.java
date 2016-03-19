@@ -1,6 +1,7 @@
 package scheduler;
 import java.util.LinkedList;
 
+import extras.Constants;
 import scheduler.Process;
 
 public class FirstComeFirstServed extends  Scheduler {
@@ -38,7 +39,7 @@ public class FirstComeFirstServed extends  Scheduler {
 	        else
 	        {   	
 	        	double idleTime= processes.get(first).getArrivalTime()-time;
-		        Process idle=new Process(0, "idle",idleTime,time);
+		        Process idle=new Process(0, Constants.IDLE,idleTime,time);
 		        idle.setStartTime(time);
 		        output.addLast(idle);
 		        time += idleTime;  
@@ -60,7 +61,7 @@ public class FirstComeFirstServed extends  Scheduler {
 		double totalWaitingTime = 0;
 		for(int i=0; i < size; i++)
 		{
-			if(output.get(i).getName().equals("idle"))
+			if(output.get(i).getPid() == 0)
 				continue;
 			waitingTime = output.get(i).getStartTime() - output.get(i).getArrivalTime();
 			totalWaitingTime += waitingTime;

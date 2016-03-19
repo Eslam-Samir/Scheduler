@@ -4,6 +4,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import custom.views.NumberTextField;
+import extras.Constants;
 import extras.Utility;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -27,12 +28,12 @@ public class MainController implements Initializable {
 	
 	
 	private ObservableList<String> list = FXCollections.observableArrayList(
-			"First Come First Served",
-            "Shortest Job First (Preemptive)",
-            "Shortest Job First (Non-Preemptive)",
-            "Priority Scheduling (Preemptive)",
-            "Priority Scheduling (Non-Preemptive)",
-            "Round Robin"
+			Constants.FCFS,
+			Constants.SJFP,
+			Constants.SJFNP,
+			Constants.PSP,
+			Constants.PSNP,
+			Constants.RR
             );
 	
 	
@@ -40,13 +41,17 @@ public class MainController implements Initializable {
 	{
 		String processesCount = numberOfProcesses.getText();
 		String schedulerType = type.getValue();
-		if(processesCount.isEmpty() || Integer.valueOf(processesCount) == 0)
+		if(processesCount.isEmpty())
 		{
 			Utility.createAlert("Enter Number of Processes");
 		}
 		else if(schedulerType == null)
 		{
 			Utility.createAlert("Choose Scheduler Type");
+		}
+		else if(processesCount.contains(".") || Integer.valueOf(processesCount) == 0)
+		{
+			Utility.createAlert("Wrong Input");
 		}
 		else
 		{

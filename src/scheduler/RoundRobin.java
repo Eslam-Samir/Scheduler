@@ -3,6 +3,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 
+import extras.Constants;
 import extras.Utility;
 import scheduler.Process;
 
@@ -37,33 +38,6 @@ public class RoundRobin extends Scheduler
 		else
 			return -1;
 	}
-
-	@Override
-	public double calculateWaitingTime() 
-	{
-		int size = output.size();
-		double waitingTime=0;
-		double totalWaitingTime=0;
-		for(int i = 0;i<size;i++)
-		{
-			if(output.get(i).getName().equals("idle"))
-				continue;
-			int previousOccurance = Utility.getPrevious(output, i - 1, output.get(i).getName());
-			if(previousOccurance == -1)
-			{
-				waitingTime = output.get(i).getStartTime() - output.get(i).getArrivalTime();
-			}
-			else
-			{
-				waitingTime = output.get(i).getStartTime() 
-						- (output.get(previousOccurance).getStartTime() + output.get(previousOccurance).getRunTime());
-			}
-			totalWaitingTime += waitingTime;
-		}
-		if(numberOfProcesses != 0)
-			avgWaitingTime = totalWaitingTime/numberOfProcesses;
-		return avgWaitingTime;
-	}
 	
 	public LinkedList<Process> run()
 	{
@@ -88,7 +62,7 @@ public class RoundRobin extends Scheduler
 			int next = nextJob(processes, timeLimit);
 			if(next == -1)
 			{
-				Process idle = new Process(0, "idle", q, timeLimit);
+				Process idle = new Process(0, Constants.IDLE, q, timeLimit);
 				idle.setStartTime(idle.getArrivalTime());
 				output.addLast(idle);
 				timeLimit += q;
@@ -108,10 +82,7 @@ public class RoundRobin extends Scheduler
 					{
 						current.setStartTime(timeLimit);
 						output.addLast(current);
-						Process idle = new Process(0, "idle", q - current.getRunTime(),
-								timeLimit + current.getRunTime());
-						idle.setStartTime(idle.getArrivalTime());
-						output.addLast(idle);
+						timeLimit += current.getRunTime();
 						processes.remove(current);
 						i--;
 					}
@@ -119,6 +90,7 @@ public class RoundRobin extends Scheduler
 					{
 						current.setStartTime(timeLimit);
 						output.addLast(current);
+						timeLimit += q;
 						processes.remove(current);
 						i--;
 					}
@@ -128,9 +100,9 @@ public class RoundRobin extends Scheduler
 								q, current.getArrivalTime());
 						currentPart.setStartTime(timeLimit);
 						output.addLast(currentPart);
+						timeLimit += q;
 						current.setRunTime(current.getRunTime()-q);
 					}
-					timeLimit += q;
 				}
 			}
 		}
@@ -141,6 +113,33 @@ public class RoundRobin extends Scheduler
 		}
 		return output;
 	  }
+	
+	@Override
+	public double calculateWaitingTime() 
+	{
+		int size = output.size();
+		double waitingTime=0;
+		double totalWaitingTime=0;
+		for(int i = 0;i<size;i++)
+		{
+			if(output.get(i).getPid() == 0)
+				continue;
+			int previousOccurance = Utility.getPrevious(output, i - 1, output.get(i).getName());
+			if(previousOccurance == -1)
+			{
+				waitingTime = output.get(i).getStartTime() - output.get(i).getArrivalTime();
+			}
+			else
+			{
+				waitingTime = output.get(i).getStartTime() 
+						- (output.get(previousOccurance).getStartTime() + output.get(previousOccurance).getRunTime());
+			}
+			totalWaitingTime += waitingTime;
+		}
+		if(numberOfProcesses != 0)
+			avgWaitingTime = totalWaitingTime/numberOfProcesses;
+		return avgWaitingTime;
+	}
 			
 }
 		

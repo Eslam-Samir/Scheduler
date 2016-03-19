@@ -7,6 +7,7 @@ import java.util.ResourceBundle;
 
 import custom.views.GanttChart.ExtraData;
 import custom.views.GanttChart;
+import extras.Constants;
 import extras.Utility;
 import scheduler.FirstComeFirstServed;
 import scheduler.Process;
@@ -81,6 +82,20 @@ public class ProcessSceneController implements Initializable {
 	
 	public void addProcess(ActionEvent action)
 	{
+		if((this.schedulerType.equals(Constants.PSP) || this.schedulerType.equals(Constants.PSNP)))
+		{
+			if(priority.getText().isEmpty())
+			{
+				Utility.createAlert("Please Enter All Fields");
+				return;
+			}
+			else if(priority.getText().equals("."))
+			{
+				Utility.createAlert("Wrong Input");
+				return;
+			}
+		}
+		
 		if(list.size() >= numberOfProcesses) //TODO check if this is required
 		{
 			Utility.createAlert("You Can't Add More Processes",
@@ -91,10 +106,9 @@ public class ProcessSceneController implements Initializable {
 		{
 			Utility.createAlert("Please Enter All Fields");
 		}
-		else if((this.schedulerType.equals("Priority Scheduling (Preemptive)") 
-				|| this.schedulerType.equals("Priority Scheduling (Non-Preemptive)")) && priority.getText().isEmpty())
+		else if(arrivalTime.getText().equals(".") || burst.getText().equals("."))
 		{
-			Utility.createAlert("Please Enter All Fields");
+			Utility.createAlert("Wrong Input");
 		}
 		else
 		{
@@ -108,17 +122,15 @@ public class ProcessSceneController implements Initializable {
 			}
 			
 			Process process;
-			if((this.schedulerType.equals("Priority Scheduling (Preemptive)") 
-					|| this.schedulerType.equals("Priority Scheduling (Non-Preemptive)")))
+			if((this.schedulerType.equals(Constants.PSP) || this.schedulerType.equals(Constants.PSNP)))
 			{
-				process = new Process(pid, processName.getText(), 
-						Double.valueOf(burst.getText()), Double.valueOf(arrivalTime.getText())
-						, Integer.valueOf(priority.getText()));
+				process = new Process(pid, processName.getText(), Double.valueOf(burst.getText()),
+						Double.valueOf(arrivalTime.getText()), Integer.valueOf(priority.getText()));
 			}
 			else
 			{
-				process = new Process(pid, processName.getText(), 
-						Double.valueOf(burst.getText()), Double.valueOf(arrivalTime.getText()));
+				process = new Process(pid, processName.getText(),Double.valueOf(burst.getText()), 
+						Double.valueOf(arrivalTime.getText()));
 			}
 			pid++;
 			list.add(process);
@@ -127,11 +139,11 @@ public class ProcessSceneController implements Initializable {
 			{
 				grid.setDisable(true);
 			}
+			processName.clear();
+			arrivalTime.clear();
+			burst.clear();
+			priority.clear();
 		}
-		processName.clear();
-		arrivalTime.clear();
-		burst.clear();
-		priority.clear();
 	}
 	
 	public void startScheduling(ActionEvent action)
@@ -147,8 +159,7 @@ public class ProcessSceneController implements Initializable {
 		int pid = 1;
 		for(int i = 0; i < numberOfProcesses; i++)
 		{
-			if((this.schedulerType.equals("Priority Scheduling (Preemptive)") 
-					|| this.schedulerType.equals("Priority Scheduling (Non-Preemptive)")))
+			if((this.schedulerType.equals(Constants.PSP) || this.schedulerType.equals(Constants.PSNP)))
 			{
 				Process process = new Process(pid, list.get(i).getName(), 
 						list.get(i).getRunTime(), list.get(i).getArrivalTime()
@@ -164,39 +175,47 @@ public class ProcessSceneController implements Initializable {
 			pid++;
 		}
 		
-		if(schedulerType.equals("First Come First Served"))
+		if(schedulerType.equals(Constants.FCFS))
 		{
 			scheduler = new FirstComeFirstServed(inputs);
 		}
-		else if(schedulerType.equals("Shortest Job First (Preemptive)"))
+		else if(schedulerType.equals(Constants.SJFP))
 		{
 			scheduler = new ShortestJobFirst(inputs, SchedulerType.preemptive);
 		}
-		else if(schedulerType.equals("Shortest Job First (Non-Preemptive)"))
+		else if(schedulerType.equals(Constants.SJFNP))
 		{
 			scheduler = new ShortestJobFirst(inputs, SchedulerType.non_preemptive);
 		}
-		else if(schedulerType.equals("Priority Scheduling (Preemptive)"))
+		else if(schedulerType.equals(Constants.PSP))
 		{
 			scheduler = new prioritySchedule(inputs, SchedulerType.preemptive);
 		}
-		else if(schedulerType.equals("Priority Scheduling (Non-Preemptive)"))
+		else if(schedulerType.equals(Constants.PSNP))
 		{
 			scheduler = new prioritySchedule(inputs, SchedulerType.non_preemptive);
 		}
-		else
+		else if(schedulerType.equals(Constants.RR))
 		{
-			if(!quantum.getText().isEmpty())
-			{
-				scheduler = new RoundRobin(inputs, Double.valueOf(quantum.getText())); 
-			}
-			else
+			if(quantum.getText().isEmpty())
 			{
 				Utility.createAlert("Please enter the time quantum");
 				return;
 			}
+			else if(quantum.getText().contains("."))
+			{
+				Utility.createAlert("Wrong Input");
+				return;
+			}
+			else
+			{
+				scheduler = new RoundRobin(inputs, Double.valueOf(quantum.getText())); 
+			}
 		}
-		
+		else
+		{
+			return;
+		}
 		outputs = scheduler.run();
 		double avg = scheduler.calculateWaitingTime();
 		
@@ -263,8 +282,6 @@ public class ProcessSceneController implements Initializable {
         
         stage.setScene(scene);
         stage.show();
-        
-        grid.setDisable(false);
 	}
 	
 	public void goBack(ActionEvent action) throws IOException
@@ -305,20 +322,18 @@ public class ProcessSceneController implements Initializable {
 	public void setSchedulerType(String schedulingType) {
 		this.schedulerType = schedulingType;
 		
-		if(!this.schedulerType.equals("Priority Scheduling (Preemptive)") 
-				&& !this.schedulerType.equals("Priority Scheduling (Non-Preemptive)"))
+		if(!this.schedulerType.equals(Constants.PSP) && !this.schedulerType.equals(Constants.PSNP))
 		{
 			table.getColumns().remove(3);
 			grid.getChildren().remove(6);
 			grid.getChildren().remove(6);
 		}
-		if(!this.schedulerType.equals("Round Robin"))
+		if(!this.schedulerType.equals(Constants.RR))
 		{
 			quantumGrid.getChildren().remove(0);
 			quantumGrid.getChildren().remove(0);
 		}
 		type.setText(type.getText() + schedulingType);
-		
 	}
 	
 
