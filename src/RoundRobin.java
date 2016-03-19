@@ -64,13 +64,10 @@ import java.util.Comparator;
 			for(int i = 0; i < processes.size(); i++){
 				if(processes.get(i).getName()=="idle"){
 					tttime+=processes.get(i).getRunTime();
-				
 					
 				}
-				else{
-					
-					if (processes.get(i).getRunTime()>q){
-					  
+				else{				
+					if (processes.get(i).getRunTime()>q){				  
 						int firstIdle= getFirstIdle(processes,i);
 						remainderTime=processes.get(i).getRunTime()-q; 
 						Process p=new Process(processes.get(i).getName(),remainderTime
@@ -107,21 +104,7 @@ import java.util.Comparator;
 				   }
 				}); 
 		
-			double ttime=0;
-			for(int i=0;i<processes.size();i++){
-				if(processes.get(i).getRunTime()<q){
-					if (processes.get(i).getName()=="idle") continue ;
-				  double idleTime=q-processes.get(i).getRunTime();
-				  Process idle=new Process("idle",idleTime,ttime+processes.get(i).getRunTime());
-				  processes.add(i+1, idle);
-				  i++;
-				  time+=q;
-				  
-				}
-				else {
-					time+=processes.get(i).getRunTime();
-				}
-			}
+		
 			
 			
 			double t=0;
