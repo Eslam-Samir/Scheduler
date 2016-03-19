@@ -10,7 +10,7 @@ public class Mymain {
 		Process p3=new Process("P3",7,23);
 		Process p4=new Process("P4",3,0);
 		
-		Process p5=new Process("P4",3,70);	    
+		Process p5=new Process("p5",3,71);	    
 			    
 		LinkedList<Process>processes1=new LinkedList<Process>();
 		processes1.add(p1);

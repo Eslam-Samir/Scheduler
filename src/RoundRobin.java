@@ -34,12 +34,12 @@ import java.util.Comparator;
 				   }
 				});
 			
-			for(int i=0;i<processes.size();i++){
+		/*	for(int i=0;i<processes.size();i++){
 				if (processes.get(i).getArrivalTime()%q !=0){
 					processes.get(i).setArrivalTime(processes.get(i).getArrivalTime()+(q-processes.get(i).getArrivalTime()%q));
 				output.addLast(processes.get(i));
 				}
-			}
+			}*/
 			
 			
 			double time =0;
