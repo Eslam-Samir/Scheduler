@@ -89,7 +89,7 @@ public class ProcessSceneController implements Initializable {
 				Utility.createAlert("Please Enter All Fields");
 				return;
 			}
-			else if(priority.getText().equals("."))
+			else if(priority.getText().contains("."))
 			{
 				Utility.createAlert("Wrong Input");
 				return;

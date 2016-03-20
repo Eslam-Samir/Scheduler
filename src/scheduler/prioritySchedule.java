@@ -42,25 +42,15 @@ public class prioritySchedule extends Scheduler {
 				else if(timeLimit + processes.get(min).getRunTime() > nextArrival)
 				{
 					Process currentProcess = processes.get(min);
-					int nextMin = Utility.getPriorityIndexLimited(processes, nextArrival);
-					if(nextMin == min)
-					{
-						currentProcess.setStartTime(timeLimit);
-						output.addLast(currentProcess);
-						timeLimit += currentProcess.getRunTime();
+					Process pausedProcess = new Process(currentProcess.getPid(), currentProcess.getName()
+							, nextArrival - timeLimit, currentProcess.getArrivalTime());
+					currentProcess.setRunTime(currentProcess.getRunTime()-pausedProcess.getRunTime());
+					pausedProcess.setStartTime(timeLimit);
+					if(currentProcess.getRunTime() == 0)
 						processes.remove(currentProcess);
-					}
-					else
-					{
-						Process pausedProcess = new Process(currentProcess.getPid(), currentProcess.getName()
-								, nextArrival - timeLimit, currentProcess.getArrivalTime());
-						currentProcess.setRunTime(currentProcess.getRunTime()-pausedProcess.getRunTime());
-						pausedProcess.setStartTime(timeLimit);
-						if(currentProcess.getRunTime() == 0)
-							processes.remove(currentProcess);
-						output.addLast(pausedProcess);
-						timeLimit = nextArrival;
-					}
+					output.addLast(pausedProcess);
+					timeLimit = nextArrival;
+					
 				}
 			}
 		break;
